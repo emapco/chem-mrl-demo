@@ -1,0 +1,13 @@
+{
+  "embeddings": [
+    {
+      "tensorName": "ChemMRL Isomer Design Vector (4)",
+      "tensorShape": [
+        4586,
+        4
+      ],
+      "tensorPath": "https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/isomer-design-vectors-4.tsv",
+      "metadataPath": "https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/isomer-design-metadata.tsv"
+    }
+  ]
+}
