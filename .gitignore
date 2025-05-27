@@ -1,0 +1,9 @@
+node_modules/
+__pycache__/
+.venv/
+.gradio/
+
+.env
+*.txt
+*.gz
+*.json
