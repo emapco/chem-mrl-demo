@@ -75,7 +75,7 @@ The `visualization` directory contains embeddings of the [Isomer Design](https:/
 | 1024 | [1024 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/1024-template_project_config.json) |
 | 512 | [512 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/512-template_project_config.json) |
 | 128 | [128 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/128-template_project_config.json) |
-| 64 | [64 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/64-template_project_config.json) |
+| 32 | [32 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/32-template_project_config.json) |
 | 4 | [4 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/4-template_project_config.json) |
 | 2 | [2 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/2-template_project_config.json) |
 
