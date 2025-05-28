@@ -29,7 +29,7 @@ class App:
             # Preprocess smiles similarly as training data for optimal performance
             smiles = MorganFingerprinter.canonicalize_smiles(smiles) or smiles
 
-            logger.info(f"Running similarity search for SMILES: {smiles} - dim: {embed_dim}")
+            logger.info(f"Running similarity search: {smiles} - ({embed_dim})")
             embedding = self.embedding_service.get_molecular_embedding(smiles, embed_dim)
             neighbors = self.embedding_service.find_similar_molecules(embedding, embed_dim)
 

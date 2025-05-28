@@ -127,11 +127,9 @@ class MolecularEmbeddingService:
                 if self.redis_client.exists(key):
                     continue
 
-                embedding_cache: np.ndarray = self.get_molecular_embedding(row["smiles"], EMBEDDING_DIMENSION)
-
                 mapping: dict[str, bytes | str] = {
-                    self.embedding_field_name(embed_dim): self._truncate_and_normalize_embedding(
-                        embedding_cache.copy(), embed_dim
+                    self.embedding_field_name(embed_dim): self.get_molecular_embedding(
+                        row["smiles"], embed_dim
                     ).tobytes()
                     for embed_dim in SUPPORTED_EMBEDDING_DIMENSIONS
                 }
