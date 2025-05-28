@@ -2,7 +2,7 @@
  * @fileoverview JSME (JavaScript Molecule Editor) integration with Gradio interface
  * Handles bidirectional synchronization between JSME applet and Gradio textbox
  * @author Manny Cortes ('manny@derifyai.com')
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 // ============================================================================
@@ -22,23 +22,17 @@ let lastTextboxValue = "";
 /** @const {string} Default SMILES for initial molecule (ethanol) */
 const DEFAULT_SMILES = "CCO";
 
+/** @const {string} Container height for JSME applet */
+const CONTAINER_HEIGHT = "450px";
+
 /** @const {string} CSS selector for the Gradio SMILES input element */
 const SMILES_INPUT_SELECTOR = "#smiles_input textarea, #smiles_input input";
-
-/** @const {number} Maximum attempts to find textbox before giving up */
-const MAX_TEXTBOX_FIND_ATTEMPTS = 20;
-
-/** @const {number} Interval for retrying textbox discovery (ms) */
-const TEXTBOX_FIND_INTERVAL = 500;
-
-/** @const {number} Interval for periodic textbox monitoring (ms) */
-const TEXTBOX_MONITOR_INTERVAL = 1000;
 
 /** @const {number} Delay for paste event handling (ms) */
 const PASTE_DELAY = 50;
 
 /** @const {number} Delay for initialization retry (ms) */
-const INIT_RETRY_DELAY = 1000;
+const INIT_RETRY_DELAY = 2000;
 
 /** @const {string[]} Events to trigger for Gradio change detection */
 const GRADIO_CHANGE_EVENTS = ["input", "change", "keyup"];
@@ -55,25 +49,32 @@ const GRADIO_CHANGE_EVENTS = ["input", "change", "keyup"];
 function initializeJSME() {
   try {
     console.log("Initializing JSME...");
-
-    const container = document.getElementById("jsme_container");
-    const parentWidth = container.parentNode.offsetWidth;
-    const containerWidth = parentWidth > 0 ? `${parentWidth}px` : "100%";
-
     // https://github.com/jsme-editor/jsme-editor.github.io
+    // https://jsme-editor.github.io/dist/api_javadoc/index.html
     // http://wiki.jmol.org/index.php/Jmol_JavaScript_Object/JME/Options
-    jsmeApplet = new JSApplet.JSME("jsme_container", containerWidth, "450px", {
-      options:
-        "rButton,zoom,zoomgui,newLook,star,multipart,polarnitro,NOexportInChI,NOexportInChIkey,NOsearchInChIkey,NOexportSVG,NOpaste",
-    });
+    jsmeApplet = new JSApplet.JSME(
+      "jsme_container",
+      getJsmeContainerWidthPx(),
+      CONTAINER_HEIGHT,
+      {
+        options:
+          "rButton,zoom,zoomgui,newLook,star,multipart,polarnitro,NOexportInChI,NOexportInChIkey,NOsearchInChIkey,NOexportSVG,NOpaste",
+      }
+    );
 
     jsmeApplet.setCallBack("AfterStructureModified", handleJSMEStructureChange);
+    jsmeApplet.setMenuScale(getJsmeGuiScale());
+    jsmeApplet.setUserInterfaceBackgroundColor("#adadad");
+    jsmeApplet.setMolecularAreaAntiAlias(true);
+    jsmeApplet.setMolecularAreaLineWidth(2);
+    jsmeApplet.setAtomMolecularAreaFontSize(20);
 
     // Set initial molecule and sync state
     jsmeApplet.readGenericMolecularInput(DEFAULT_SMILES);
     lastTextboxValue = DEFAULT_SMILES;
 
-    setupTextboxMonitoring();
+    setupTextboxEventListeners();
+    window.addEventListener("resize", handleResize);
 
     console.log("JSME initialized successfully");
   } catch (error) {
@@ -94,6 +95,54 @@ function handleJSMEStructureChange(event) {
   } catch (error) {
     console.error("Error getting SMILES from JSME:", error);
   }
+}
+
+/**
+ * Calculates the appropriate GUI scale for the JSME applet based on container width
+ * Uses breakpoints to determine optimal scaling for different screen sizes
+ * @returns {number} The scale factor for the JSME GUI (0.88 to 2.0)
+ */
+function getJsmeGuiScale() {
+  const width = getJsmeContainerWidthNumber();
+  let menuScale;
+  if (width > 460) {
+    menuScale = 1.3;
+  } else if (width > 420) {
+    menuScale = 1.1;
+  } else if (width > 370) {
+    menuScale = 1.05;
+  } else if (width > 300) {
+    menuScale = 0.88;
+  } else {
+    menuScale = 2;
+  }
+  return menuScale;
+}
+
+/**
+ * Gets the JSME container width as a CSS-compatible string value
+ * Returns either a pixel value or percentage based on available width
+ * @returns {string} Width as "100%" or "{width}px" format
+ */
+function getJsmeContainerWidthPx() {
+  const parentWidth = getJsmeContainerWidthNumber();
+  if (parentWidth == null || parentWidth <= 0) {
+    return "100%";
+  }
+  return `${parentWidth}px`;
+}
+
+/**
+ * Gets the numeric width of the JSME container's parent element
+ * Used for responsive scaling calculations
+ * @returns {number|null} Width in pixels, or null if container not found
+ */
+function getJsmeContainerWidthNumber() {
+  const container = document.getElementById("jsme_container");
+  if (!container) {
+    return null;
+  }
+  return container.parentNode.offsetWidth;
 }
 
 // ============================================================================
@@ -155,59 +204,18 @@ function updateJSMEFromTextbox(smiles) {
 }
 
 // ============================================================================
-// TEXTBOX MONITORING
+// UI MONITORING
 // ============================================================================
 
 /**
- * Sets up monitoring for changes in the Gradio textbox
- * Implements multiple strategies to ensure reliable change detection
- */
-function setupTextboxMonitoring() {
-  if (!findAndSetupTextbox()) {
-    retryTextboxSetup();
-  }
-
-  setupPeriodicTextboxCheck();
-}
-
-/**
  * Finds the textbox element and sets up event listeners
- * @returns {boolean} True if textbox was found and set up successfully
  */
-function findAndSetupTextbox() {
+function setupTextboxEventListeners() {
   const textbox = document.querySelector(SMILES_INPUT_SELECTOR);
-
   if (!textbox) {
-    return false;
+    return;
   }
 
-  removeTextboxListeners(textbox);
-  addTextboxListeners(textbox);
-
-  // Perform initial sync if needed
-  if (textbox.value && textbox.value !== lastTextboxValue) {
-    updateJSMEFromTextbox(textbox.value);
-  }
-
-  return true;
-}
-
-/**
- * Removes event listeners from the textbox
- * @param {HTMLElement} textbox - The textbox element
- */
-function removeTextboxListeners(textbox) {
-  textbox.removeEventListener("input", handleTextboxChange);
-  textbox.removeEventListener("change", handleTextboxChange);
-  textbox.removeEventListener("paste", handleTextboxPaste);
-  textbox.removeEventListener("keyup", handleTextboxChange);
-}
-
-/**
- * Adds event listeners to the textbox
- * @param {HTMLElement} textbox - The textbox element
- */
-function addTextboxListeners(textbox) {
   textbox.addEventListener("input", handleTextboxChange);
   textbox.addEventListener("change", handleTextboxChange);
   textbox.addEventListener("paste", handleTextboxPaste);
@@ -235,40 +243,19 @@ function handleTextboxPaste(event) {
 }
 
 /**
- * Retries textbox setup with exponential backoff
+ * Handles window resize events and updates JSME applet width
  */
-function retryTextboxSetup() {
-  let attempts = 0;
+function handleResize() {
+  if (!jsmeApplet) {
+    return;
+  }
 
-  const retryInterval = setInterval(() => {
-    attempts++;
-
-    if (findAndSetupTextbox() || attempts >= MAX_TEXTBOX_FIND_ATTEMPTS) {
-      clearInterval(retryInterval);
-
-      if (attempts >= MAX_TEXTBOX_FIND_ATTEMPTS) {
-        console.error(
-          `Could not find textbox after ${MAX_TEXTBOX_FIND_ATTEMPTS} attempts`
-        );
-      }
-    }
-  }, TEXTBOX_FIND_INTERVAL);
-}
-
-/**
- * Sets up periodic checking for textbox changes as a fallback mechanism
- */
-function setupPeriodicTextboxCheck() {
-  setInterval(() => {
-    try {
-      const textbox = document.querySelector(SMILES_INPUT_SELECTOR);
-      if (textbox && textbox.value !== lastTextboxValue) {
-        updateJSMEFromTextbox(textbox.value);
-      }
-    } catch (error) {
-      console.error("Error in periodic textbox check:", error);
-    }
-  }, TEXTBOX_MONITOR_INTERVAL);
+  try {
+    jsmeApplet.setMenuScale(getJsmeGuiScale());
+    jsmeApplet.setWidth(getJsmeContainerWidthPx());
+  } catch (error) {
+    console.error("Error resizing JSME applet:", error);
+  }
 }
 
 // ============================================================================
@@ -291,24 +278,6 @@ window.setJSMESmiles = function (smiles) {
 };
 
 /**
- * Gets the current SMILES string from JSME
- * @returns {string} The current SMILES string, or empty string if unavailable
- * @public
- */
-window.getJSMESmiles = function () {
-  if (!jsmeApplet) {
-    return "";
-  }
-
-  try {
-    return jsmeApplet.smiles();
-  } catch (error) {
-    console.error("Error getting SMILES:", error);
-    return "";
-  }
-};
-
-/**
  * Clears both JSME and Gradio textbox
  * @returns {Array} Array containing cleared state for Gradio components
  * @public
@@ -327,7 +296,7 @@ window.clearJSME = function () {
 // ============================================================================
 
 /**
- * Checks if JSME library is loaded and initializes when ready
+ * Checks if JSME library is loaded and initializes JSME applet
  * Retries until the library becomes available
  */
 function initializeWhenReady() {
@@ -353,5 +322,4 @@ function startInitialization() {
   }
 }
 
-// Start the initialization process
 startInitialization();
