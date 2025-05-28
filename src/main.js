@@ -56,9 +56,13 @@ function initializeJSME() {
   try {
     console.log("Initializing JSME...");
 
+    const container = document.getElementById("jsme_container");
+    const parentWidth = container.parentNode.offsetWidth;
+    const containerWidth = parentWidth > 0 ? `${parentWidth}px` : "100%";
+
     // https://github.com/jsme-editor/jsme-editor.github.io
     // http://wiki.jmol.org/index.php/Jmol_JavaScript_Object/JME/Options
-    jsmeApplet = new JSApplet.JSME("jsme_container", "100%", "450px", {
+    jsmeApplet = new JSApplet.JSME("jsme_container", containerWidth, "450px", {
       options:
         "rButton,zoom,zoomgui,newLook,star,multipart,polarnitro,NOexportInChI,NOexportInChIkey,NOsearchInChIkey,NOexportSVG,NOpaste",
     });

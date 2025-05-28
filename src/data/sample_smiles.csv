@@ -1,0 +1,11 @@
+smiles,name,category
+CCO,Ethanol,Alcohol
+CC(=O)O,Acetic acid,Carboxylic acid
+c1ccccc1,Benzene,Aromatic hydrocarbon
+CC(C)O,Isopropanol,Alcohol
+c1ccc(cc1)O,Phenol,Aromatic alcohol
+CC(=O)OC1=CC=CC=C1C(=O)O,Aspirin,Carboxylic acid ester
+CN1C=NC2=C1C(=O)N(C(=O)N2C)C,Caffeine,Alkaloid
+CCN(CC)CC,Triethylamine,Amine
+c1ccc2c(c1)cccn2,Quinoline,Aromatic heterocycle
+c1ccc(cc1)N,Aniline,Aromatic amine
