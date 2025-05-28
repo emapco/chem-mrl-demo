@@ -80,7 +80,7 @@ CCOC(=O)c1ncn2c1C(C)N=C(c1ccc(F)cc1)c1cc(F)ccc1-2,"Ethyl 8-fluoro-6-(4-fluorophe
 O=C1CN=C(c2ccccc2F)c2cc(Cl)c(Cl)cc2N1,Ro-20-8065,aryldiazepine
 CN1C(=O)CN=C(c2c(F)cccc2F)c2cc(Br)ccc21,Ro-13-3780,aryldiazepine
 CN1C(=O)CC(=O)N(c2ccccc2)c2cc(Cl)ccc21,Clobazam,aryldiazepine
-OCc1nnc2n1-c1ccc(Cl)cc1C(c1ccccc1)=NC2,α-Hydroxyalprazolam,aryldiazepine
+OCc1nnc2n1-c1ccc(Cl)cc1C(c1ccccc1)=NC2,alpha-Hydroxyalprazolam,aryldiazepine
 O=C1Nc2ccc(Cl)cc2C(c2ccccc2)=NC1O,Oxazepam,aryldiazepine
 CCOC(=O)c1ncn2c1CN=C(c1ccc([N+](=O)[O-])cc1)c1ccccc1-2,Ro-23-2896,aryldiazepine
 CN1C(=O)CN=C(c2ccccc2F)c2cc(Br)ccc21,Flubrometazepam,aryldiazepine
@@ -194,7 +194,7 @@ C=CCc1ccc(OC)cc1OC,Osmorrhizole,essential oil
 C=CCc1ccc(OC)c(OC)c1,Methyleugenol,essential oil
 C=CCc1ccc(O)c(OC)c1,Eugenol,essential oil
 C=CCc1cc2c(c(OC)c1OC)OCO2,Dillapiole,essential oil
-C/C=C\c1ccc2c(c1)OCO2,α-Isosafrole,essential oil
+C/C=C\c1ccc2c(c1)OCO2,alpha-Isosafrole,essential oil
 C/C=C/c1cc(OC)c(OC)c(OC)c1,Isoelemicin,essential oil
 C=CCc1ccc(OC)c(O)c1,Chavibetol,essential oil
 C=CCc1cc(OC)c(OC)c(OC)c1,Elemicin,essential oil
@@ -218,16 +218,16 @@ C/C=C/c1cc2c(c(OC)c1OC)OCO2,Isodillapiole,essential oil
 C/C=C/c1cc(OC)c(OC)cc1OC,Asarone,essential oil
 C/C=C/c1ccc(O)c(OC)c1,Isoeugenol,essential oil
 C/C=C\c1cc(OC)cc(OC)c1,"cis-3,5-Dimethoxyphenylprop-1-ene",essential oil
-C/C=C\c1cc(OC)c(OC)cc1OC,β-Asarone,essential oil
+C/C=C\c1cc(OC)c(OC)cc1OC,beta-Asarone,essential oil
 C=CCc1cc(OC)c2c(c1)OCO2,Myristicin,essential oil
 C/C=C/c1ccc(OC)c(O)c1,2-Methoxy-5-[(1E)-prop-1-en-1-yl]phenol,essential oil
 C/C=C/c1cc(OC)c2c(c1)OCO2,Isomyristicin,essential oil
 C/C=C\c1ccc(OC)c(OC)c1,"cis-3,4-Dimethoxyphenylprop-1-ene",essential oil
 C=CCc1cc(OC)c(O)c(OC)c1,5-Methoxyeugenol,essential oil
-C/C=C/c1ccc2c(c1)OCO2,β-Isosafrole,essential oil
+C/C=C/c1ccc2c(c1)OCO2,beta-Isosafrole,essential oil
 C/C=C\c1cc(OC)c(OC)c(OC)c1OC,"cis-2,3,4,5-Tetramethoxyphenylprop-1-ene",essential oil
 C/C=C/c1cc2c(cc1OC)OCO2,Carpacin,essential oil
-CCC(=O)N(c1ccccc1)C1(COC)CCN(CC(O)c2cccs2)CC1,β-Hydroxy-sufentanil,fentanyl
+CCC(=O)N(c1ccccc1)C1(COC)CCN(CC(O)c2cccs2)CC1,beta-Hydroxy-sufentanil,fentanyl
 CCC(=O)N(CCc1ccccc1)C1CCN(CCc2ccccc2)CC1,(ethylene) Fentanyl,fentanyl
 CCC(=O)N(c1ccccc1F)C1(c2ccccc2)CCN(CCn2cccn2)CC1,N-(2-Fluorophenyl)-N-{4-phenyl-1-[2-(1H-pyrazol-1-yl)ethyl]piperidin-4-yl}propanamide,fentanyl
 CCC(=O)N(c1ccccc1)C1CCN(C(C)Cc2cc(OC)c(I)cc2OC)CC1,N-(DOI) fentanyl,fentanyl
@@ -286,7 +286,7 @@ CCC(=O)[N+]([O-])(c1ccccc1)C1(C(=O)OC)CCN(CCc2ccccc2)CC1,Carfentanil N-oxide,fen
 CCC(=O)N(c1ccccc1)C1(C(=O)OC)CCN(CCc2cccc(O)c2)CC1,3″-Hydroxycarfentanil,fentanyl
 CCC(=O)N(c1ccccc1)C1CCN(C(C)C(=O)OC(C)C)CC1,Propan-2-yl 2-{4-[phenyl(propanoyl)amino]piperidin-1-yl}propanoate,fentanyl
 O=C(C1CCC1)N(c1ccc(Cl)cc1)C1CCN(CCc2ccccc2)CC1,p-Chloro-cyclobutylfentanyl,fentanyl
-CCC(C)C(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)CC1,α′-Methyl-butyrylfentanyl,fentanyl
+CCC(C)C(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)CC1,alpha′-Methyl-butyrylfentanyl,fentanyl
 Oc1cc2c(cc1O)CNCC2,Norsalsolinol,neurotoxin
 CC(N)Cc1ccc(Cl)cc1,PCA,neurotoxin
 CC1NCCc2cc(O)c(O)cc21,Salsolinol,neurotoxin
@@ -372,7 +372,7 @@ Oc1cccc2[nH]cc(CCN3CCCCC3)c12,4-HO-pip-T,tryptamine
 CN(C)CCc1c[nH]c2cccc(OCc3ccccc3)c12,4-Benzyloxy-DMT,tryptamine
 CN(C)CCc1c[nH]c2cccc(OC(=O)SCc3ccccc3)c12,S-Benzyl O-{3-[2-(dimethylamino)ethyl]-1H-indol-4-yl} carbonothioate,tryptamine
 COc1cc(OC)c2[nH]cc(CCNCc3ccccc3)c2c1,"5,7-MeO-T-NB",tryptamine
-CNC(C)Cc1c[nH]c2ccc(OCc3ccccc3)cc12,5-Benzyloxy-α-methyl-NMT,tryptamine
+CNC(C)Cc1c[nH]c2ccc(OCc3ccccc3)cc12,5-Benzyloxy-alpha-methyl-NMT,tryptamine
 CC(C)(C)CCCCCCCOc1ccc2[nH]cc(CCN)c2c1,"5-(8,8-Dimethylnonyloxy)-T",tryptamine
 CCCOc1ccc2[nH]cc(CCN(CC)CC)c2c1,5-PrO-DET,tryptamine
 COc1ccc2[nH]cc(CCN(C)CCCc3cc(OC)c(OC)c(OC)c3)c2c1,"N-(3,4,5-Trimethoxyphenylpropyl)-5-MeO-NMT",tryptamine
@@ -391,14 +391,14 @@ Oc1ccc(CNCCc2c[nH]c3ccccc23)cc1,T-NB4OH,tryptamine
 COc1c(Br)cc(Br)cc1CNCCc1c[nH]c2ccccc12,T-NBOMe35Br,tryptamine
 CCn1cc(CCN(C)C)c2c(OCc3ccccc3)cc(F)cc21,1-Ethyl-6-fluoro-4-benzyloxy-DMT,tryptamine
 CN(C)CCc1c[nH]c2cccc(OC(=O)c3cccc(C(=O)Oc4cccc5[nH]cc(CCN(C)C)c45)c3)c12,"Bis{3-[2-(dimethylamino)ethyl]-1H-indol-4-yl} benzene-1,3-dicarboxylate",tryptamine
-CCN(CC)C(=O)CCN(C)CCc1c[nH]c2ccc(OC)cc12,"N,N-Diethyl-N3-[2-(5-methoxy-1H-indol-3-yl)ethyl]-N3-methyl-β-alaninamide",tryptamine
+CCN(CC)C(=O)CCN(C)CCc1c[nH]c2ccc(OC)cc12,"N,N-Diethyl-N3-[2-(5-methoxy-1H-indol-3-yl)ethyl]-N3-methyl-beta-alaninamide",tryptamine
 COc1ccc(CNCCc2c[nH]c3c(Br)cc(OC)cc23)cc1,7-Bromo-5-MeO-T-NB4OMe,tryptamine
 CCCN(C)CCc1c[nH]c2ccc(F)cc12,5-Fluoro-MPT,tryptamine
 CN(CCc1c[nH]c2cc3c(cc12)OCO3)Cc1ccccc1,"5,6-MDO-NMT-NB",tryptamine
 Cc1c(OC(=O)CCC(=O)O)ccc2[nH]cc(CCN(C)C)c12,Psilocin-4-methyl-5-succinate,tryptamine
 COc1ccc2[nH]cc(CC(C)N)c2c1Br,4-Bromo-5-MeO-AMT,tryptamine
-CN(C)CC(=O)c1c[nH]c2cc(F)ccc12,β-Oxo-6-fluoro-DMT,tryptamine
-COc1ccc2[nH]cc(C(O)CN(C)C)c2c1,β-HO-5-MeO-DMT,tryptamine
+CN(C)CC(=O)c1c[nH]c2cc(F)ccc12,beta-Oxo-6-fluoro-DMT,tryptamine
+COc1ccc2[nH]cc(C(O)CN(C)C)c2c1,beta-HO-5-MeO-DMT,tryptamine
 COc1cccc2c(CCN)c[nH]c12,7-MeO-T,tryptamine
 COc1cc(I)c2[nH]cc(CCN(C)C)c2c1,7-Iodo-5-MeO-DMT,tryptamine
 C[C@@H]1CC[C@H](C)N1CCc1c[nH]c2ccccc12,"(R,S)-Dimethyl-pyr-T",tryptamine
@@ -409,6 +409,7 @@ CCCCS(=O)(=O)n1cc(CCN(C)C)c2c(OC)cccc21,1-Butylsulfonyl-4-MeO-DMT,tryptamine
 CCCN(CCC)CCc1c[nH]c2ccc(OC(C)=O)cc12,5-AcO-DPT,tryptamine
 CN(C)CCc1cn(C)c2ccccc12,1-TMT,tryptamine
 CCN(CCc1c[nH]c2cc(F)c(F)cc12)C(C)C,"5,6-Difluoro-EIPT",tryptamine
-CN(C)CC(=O)c1c[nH]c2c(F)cc(F)cc12,"β-Oxo-5,7-difluoro-DMT",tryptamine
+CN(C)CC(=O)c1c[nH]c2c(F)cc(F)cc12,"beta-Oxo-5,7-difluoro-DMT",tryptamine
 CN(C)CCc1cn(C)c2cc(F)cc(OCc3ccccc3)c12,1-Methyl-6-fluoro-4-benzyloxy-DMT,tryptamine
 CCCc1[nH]c2ccc(OC)cc2c1CCN(C)C,2-Propyl-5-MeO-DMT,tryptamine
+CC(=O)Oc2cccc1[nH]cc(CCN(C)C)c12,4-AcO-DMT,tryptamine

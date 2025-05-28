@@ -13,19 +13,25 @@ from sentence_transformers import SentenceTransformer
 
 from constants import (
     EMBEDDING_DIMENSION,
-    HNSW_DISTANCE_METRIC,
-    HNSW_EF_CONSTRUCTION,
-    HNSW_EF_RUNTIME,
-    HNSW_INITIAL_CAP,
-    HNSW_M,
+    HNSW_K,
+    HNSW_PARAMETERS,
     MODEL_NAME,
     SUPPORTED_EMBEDDING_DIMENSIONS,
 )
 from data import DATASET_SMILES, ISOMER_DESIGN_SUBSET
 
+
+def setup_logger(clear_handler=False):
+    if clear_handler:
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)  # issue with sentence-transformer's logging handler
+    logging.basicConfig(format="%(asctime)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    return logger
+
+
 load_dotenv()
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logger(clear_handler=True)
 
 
 class SimilarMolecule(TypedDict):
@@ -93,13 +99,8 @@ class MolecularEmbeddingService:
                     self.embedding_field_name(dim),
                     "HNSW",
                     {
-                        "TYPE": "FLOAT32",
+                        **HNSW_PARAMETERS,
                         "DIM": dim,
-                        "DISTANCE_METRIC": HNSW_DISTANCE_METRIC,
-                        "INITIAL_CAP": HNSW_INITIAL_CAP,
-                        "M": HNSW_M,
-                        "EF_CONSTRUCTION": HNSW_EF_CONSTRUCTION,
-                        "EF_RUNTIME": HNSW_EF_RUNTIME,
                     },
                 )
                 for dim in SUPPORTED_EMBEDDING_DIMENSIONS
@@ -108,7 +109,7 @@ class MolecularEmbeddingService:
 
             self.redis_client.ft(self.index_name).create_index(
                 schema,
-                definition=IndexDefinition(prefix=[self.molecule_prefix("")], index_type=IndexType.HASH),
+                definition=IndexDefinition(prefix=[self.molecule_index_prefix("")], index_type=IndexType.HASH),
             )
 
             logger.info(f"Created HNSW index: {self.index_name}")
@@ -119,35 +120,33 @@ class MolecularEmbeddingService:
 
     def __populate_sample_data(self, df: pd.DataFrame):
         """Populate Redis with sample molecular data"""
-        logger.info("Populating sample molecular data...")
-        try:
-            for _, row in df.iterrows():
-                try:
-                    key = self.molecule_prefix(row["smiles"])
-                    if self.redis_client.exists(key):
-                        continue
-
-                    mapping: dict[str, bytes | str] = {
-                        self.embedding_field_name(embed_dim): self.get_molecular_embedding(
-                            row["smiles"], embed_dim
-                        ).tobytes()
-                        for embed_dim in SUPPORTED_EMBEDDING_DIMENSIONS
-                    }
-                    mapping = {**mapping, **row.to_dict()}
-
-                    self.redis_client.hset(
-                        key,
-                        mapping=mapping,
-                    )
-
-                except Exception as e:
-                    logger.error(f"Failed to process molecule {row}: {e}")
+        logger.info("Populating Redis with sample molecular data...")
+        for _, row in df.iterrows():
+            try:
+                key = self.molecule_index_prefix(row["smiles"])
+                if self.redis_client.exists(key):
                     continue
 
-            logger.info(f"Populated {len(df)} sample molecules")
+                embedding_cache: np.ndarray = self.get_molecular_embedding(row["smiles"], EMBEDDING_DIMENSION)
 
-        except Exception as e:
-            logger.error(f"Failed to populate sample data: {e}")
+                mapping: dict[str, bytes | str] = {
+                    self.embedding_field_name(embed_dim): self._truncate_and_normalize_embedding(
+                        embedding_cache.copy(), embed_dim
+                    ).tobytes()
+                    for embed_dim in SUPPORTED_EMBEDDING_DIMENSIONS
+                }
+                mapping = {**mapping, **row.to_dict()}
+
+                self.redis_client.hset(
+                    key,
+                    mapping=mapping,
+                )
+
+            except Exception as e:
+                logger.error(f"Failed to process molecule {row}: {e}")
+                continue
+
+        logger.info(f"Populated {len(df)} sample molecules")
 
     def get_molecular_embedding(self, smiles: str, embed_dim: int) -> np.ndarray:
         """Generate molecular embedding using ChemMRL"""
@@ -161,17 +160,22 @@ class MolecularEmbeddingService:
                 convert_to_numpy=True,
             )[0]
 
-            if embed_dim < len(embedding):
-                embedding = embedding[:embed_dim]
-
-            norms = np.linalg.norm(embedding, ord=2, keepdims=True)
-            return embedding / np.where(norms == 0, 1, norms)
+            return self._truncate_and_normalize_embedding(embedding, embed_dim)
 
         except Exception as e:
             logger.error(f"Failed to generate embedding for {smiles}: {e}")
             raise
 
-    def find_similar_molecules(self, query_embedding: np.ndarray, embed_dim: int, k: int = 10) -> list[SimilarMolecule]:
+    def _truncate_and_normalize_embedding(self, embedding: np.ndarray, embed_dim: int) -> np.ndarray:
+        """Truncate and normalize embedding"""
+        if embed_dim < len(embedding):
+            embedding = embedding[:embed_dim]
+        norm = embedding / np.linalg.norm(embedding, ord=2)
+        return embedding / np.where(norm == 0, 1, norm)
+
+    def find_similar_molecules(
+        self, query_embedding: np.ndarray, embed_dim: int, k: int = HNSW_K
+    ) -> list[SimilarMolecule]:
         """Find k most similar molecules using HNSW"""
         try:
             query_vector = query_embedding.astype(np.float32).tobytes()
@@ -184,11 +188,10 @@ class MolecularEmbeddingService:
 
             results = self.redis_client.ft(self.index_name).search(query, query_params={"vec": query_vector})
 
-            neighbors: list[SimilarMolecule] = []
-            for doc in results.docs:
-                neighbors.append(
-                    {"smiles": doc.smiles, "name": doc.name, "category": doc.category, "score": float(doc.score)}
-                )
+            neighbors: list[SimilarMolecule] = [
+                {"smiles": doc.smiles, "name": doc.name, "category": doc.category, "score": float(doc.score)}
+                for doc in results.docs
+            ]
 
             return neighbors
 
@@ -201,5 +204,5 @@ class MolecularEmbeddingService:
         return f"embedding_{dim}"
 
     @staticmethod
-    def molecule_prefix(smiles: str) -> str:
+    def molecule_index_prefix(smiles: str) -> str:
         return f"mol:{smiles}"

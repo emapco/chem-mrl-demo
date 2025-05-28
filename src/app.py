@@ -1,17 +1,16 @@
 import gradio as gr
 import numpy as np
 import pandas as pd
+from chem_mrl.molecular_fingerprinter import MorganFingerprinter
 from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem.Draw import rdMolDraw2D
 
-from constants import (
-    EMBEDDING_DIMENSION,
-    HNSW_K,
-    SUPPORTED_EMBEDDING_DIMENSIONS,
-)
+from constants import EMBEDDING_DIMENSION, LAUNCH_PARAMETERS, SUPPORTED_EMBEDDING_DIMENSIONS
 from data import SAMPLE_SMILES
-from service import MolecularEmbeddingService, SimilarMolecule, logger
+from service import MolecularEmbeddingService, SimilarMolecule, setup_logger
+
+logger = setup_logger()
 
 
 class App:
@@ -22,19 +21,17 @@ class App:
     def molecule_similarity_search_pipeline(
         self, smiles: str, embed_dim: int
     ) -> tuple[list[float], list[SimilarMolecule], str]:
-        """Complete pipeline: SMILES -> Embedding -> Similar molecules"""
+        """Complete pipeline: SMILES -> Canonical SMILES -> Embedding -> Similar molecules"""
         try:
             if not smiles or smiles.strip() == "":
                 return [], [], "Please provide a valid SMILES string"
 
-            logger.info(f"Running complete analysis for SMILES: {smiles} - dim: {embed_dim}")
+            # Preprocess smiles similarly as training data for optimal performance
+            smiles = MorganFingerprinter.canonicalize_smiles(smiles) or smiles
 
-            embedding = self.embedding_service.get_molecular_embedding(smiles.strip(), embed_dim)
-            neighbors = self.embedding_service.find_similar_molecules(
-                embedding,
-                embed_dim,
-                k=HNSW_K,
-            )
+            logger.info(f"Running similarity search for SMILES: {smiles} - dim: {embed_dim}")
+            embedding = self.embedding_service.get_molecular_embedding(smiles, embed_dim)
+            neighbors = self.embedding_service.find_similar_molecules(embedding, embed_dim)
 
             return embedding.tolist(), neighbors, "Analysis completed successfully"
 
@@ -44,12 +41,15 @@ class App:
             return [], [], error_msg
 
     @staticmethod
-    def draw_molecule_grid(similar: list[SimilarMolecule]) -> np.ndarray:
-        max_len = 40
+    def _truncated_attribute(obj, attr, max_len=45):
+        return f"{obj[attr][:max_len]}{'...' if len(obj[attr]) > max_len else ''}"
+
+    @classmethod
+    def _draw_molecule_grid(cls, similar: list[SimilarMolecule]) -> np.ndarray:
         mols = [Chem.MolFromSmiles(m["smiles"]) for m in similar]
         legends = [
-            f"{m['name'][:max_len]}{'...' if len(m['name']) > max_len else ''}"
-            f"\n{m['category']}\n{m['smiles']}\n({m['score']:.2E})"
+            f"{cls._truncated_attribute(m, 'name')}\n{m['category']}\n"
+            f"{cls._truncated_attribute(m, 'smiles')}\n({m['score']:.2E})"
             for m in similar
         ]
 
@@ -68,6 +68,22 @@ class App:
         return img
 
     @staticmethod
+    def _display_sample_molecules(mols: pd.DataFrame):
+        for _, row in mols.iterrows():
+            with gr.Group():
+                gr.Textbox(value=row["smiles"], label=f"{row['name']} ({row['category']})", interactive=False, scale=3)
+                sample_btn = gr.Button(
+                    f"Load {row['name']}",
+                    scale=1,
+                    size="sm",
+                    variant="primary",
+                )
+                sample_btn.click(
+                    fn=None,
+                    js=f"() => {{window.setJSMESmiles('{row['smiles']}');}}",
+                )
+
+    @staticmethod
     def clear_all():
         return "", [], [], None, "Cleared - Draw a new molecule or enter SMILES"
 
@@ -76,44 +92,41 @@ class App:
             return (
                 [],
                 [],
-                "Please draw a molecule or enter a SMILES string",
                 None,
+                "Please draw a molecule or enter a SMILES string",
             )
         embedding, similar, status = self.molecule_similarity_search_pipeline(smiles, embed_dim)
-
-        img = self.draw_molecule_grid(similar)
+        img = self._draw_molecule_grid(similar)
         return embedding, similar, img, status
 
     def create_gradio_interface(self):
         """Create the Gradio interface optimized for JavaScript client usage"""
-        custom_js = """
-<script type="text/javascript" language="javascript" src="https://jsme-editor.github.io/dist/jsme/jsme.nocache.js"></script>
-<script type="text/javascript" src="gradio_api/file=src/main.js" defer></script>
-<link rel="stylesheet" href="gradio_api/file=src/main.css">
+        head_scripts = """
+<link rel="preconnect" href="https://jsme-editor.github.io">
+<link rel="preload" href="https://jsme-editor.github.io/dist/jsme/jsme.nocache.js" as="script" crossorigin="anonymous">
+<link rel="preload" href="gradio_api/file=src/main.min.js" as="script">
+<script type="text/javascript" src="https://jsme-editor.github.io/dist/jsme/jsme.nocache.js" crossorigin="anonymous" defer></script>
+<script type="text/javascript" src="gradio_api/file=src/main.min.js" defer></script>
         """
 
         with gr.Blocks(
-            title="Chem-MRL Demo",
+            title="Chem-MRL: Molecular Similarity Search Demo",
             theme=gr.themes.Soft(),
-            head=custom_js,
+            head=head_scripts,
         ) as demo:
             gr.Markdown("""
-            # 🧪 Chem-MRL Demo
-            Draw molecules using the JSME editor or enter SMILES strings directly.
-            The API service invokes the Chem-MRL model to generate molecular embeddings.
-            A redis vector database is used to find similar molecules.
-            Vector indexing is performed using HNSW. <br/>
-            [Model code repo](https://github.com/emapco/chem-mrl) - [Demo code repo](https://github.com/emapco/chem-mrl-demo)
+            # 🧪 Chem-MRL: Molecular Similarity Search Demo
+
+            Use the JSME editor to draw a molecule or input a SMILES string.
+            The backend encodes the molecule using the Chem-MRL model to produce a vector embedding.
+            Similarity search is performed via an HNSW-indexed Redis vector store to retrieve closest matches.<br/>
+
+            [Model Repo](https://github.com/emapco/chem-mrl) | [Demo Repo](https://github.com/emapco/chem-mrl-demo)
             """)
             with gr.Tab("🔬 Molecule Analysis"), gr.Row():
                 with gr.Column(scale=1):
                     gr.Markdown("### Molecule Input")
-
-                    gr.HTML("""
-                            <div>
-                                <div id="jsme_container"></div>
-                            </div>
-                        """)
+                    gr.HTML("<div id='jsme_container'></div>")
 
                     smiles_input = gr.Textbox(
                         label="SMILES String",
@@ -166,30 +179,13 @@ class App:
                 Click any button below to load the molecule into the JSME editor:
                 """)
 
-                def display_sample_molecules(mols: pd.DataFrame):
-                    for _, row in mols.iterrows():
-                        gr.Textbox(
-                            value=row["smiles"], label=f"{row['name']} ({row['category']})", interactive=False, scale=3
-                        )
-                        sample_btn = gr.Button(f"Load {row['name']}", scale=1, size="sm")
-                        sample_btn.click(
-                            fn=None,
-                            js=f"""
-                            () => {{
-                                window.setJSMESmiles('{row["smiles"]}');
-                                return '{row["smiles"]}';
-                            }}
-                            """,
-                            outputs=smiles_input,
-                        )
-
                 with gr.Row():
                     with gr.Column(scale=1):
-                        display_sample_molecules(SAMPLE_SMILES[::3])
+                        self._display_sample_molecules(SAMPLE_SMILES[::3])
                     with gr.Column(scale=1):
-                        display_sample_molecules(SAMPLE_SMILES[1::3])
+                        self._display_sample_molecules(SAMPLE_SMILES[1::3])
                     with gr.Column(scale=1):
-                        display_sample_molecules(SAMPLE_SMILES[2::3])
+                        self._display_sample_molecules(SAMPLE_SMILES[2::3])
 
             # Main analysis
             search_btn.click(
@@ -204,10 +200,10 @@ class App:
                 api_name="molecule_similarity_search_pipeline",
             )
 
-            # Clear functionality
+            # Clear UI state
             clear_btn.click(
                 fn=self.clear_all,
-                js="() => { window.clearJSME(); return ['', [], [], null, 'Cleared - Draw a new molecule or enter SMILES']; }",
+                js="window.clearJSME",
                 outputs=[
                     smiles_input,
                     embedding_output,
@@ -224,12 +220,4 @@ class App:
 
 if __name__ == "__main__":
     app = App()
-    app.demo.launch(
-        server_name="0.0.0.0",
-        server_port=7860,
-        share=True,
-        debug=False,
-        show_api=False,
-        pwa=True,
-        mcp_server=False,
-    )
+    app.demo.launch(**LAUNCH_PARAMETERS)
