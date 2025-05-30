@@ -5,6 +5,7 @@ from typing import TypedDict
 import numpy as np
 import pandas as pd
 import redis
+from chem_mrl.molecular_fingerprinter import MorganFingerprinter
 from dotenv import load_dotenv
 from redis.commands.search.field import TextField, VectorField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
@@ -152,6 +153,9 @@ class MolecularEmbeddingService:
             if embed_dim <= 0:
                 raise ValueError("embed_dim must be positive")
 
+            # Preprocess smiles similarly as training data for optimal performance
+            smiles = MorganFingerprinter.canonicalize_smiles(smiles) or smiles
+
             embedding: np.ndarray = self.model.encode(
                 [smiles],
                 show_progress_bar=False,
@@ -168,8 +172,8 @@ class MolecularEmbeddingService:
         """Truncate and normalize embedding"""
         if embed_dim < len(embedding):
             embedding = embedding[:embed_dim]
-        norm = embedding / np.linalg.norm(embedding, ord=2)
-        return embedding / np.where(norm == 0, 1, norm)
+        norms = np.linalg.norm(embedding, ord=2, keepdims=True)
+        return embedding / np.where(norms == 0, 1, norms)
 
     def find_similar_molecules(
         self, query_embedding: np.ndarray, embed_dim: int, k: int = HNSW_K

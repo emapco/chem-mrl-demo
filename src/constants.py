@@ -13,10 +13,10 @@ HNSW_PARAMETERS = {
     # Defines the initial capacity of the vector index. It helps in pre-allocating space for the index.
     "INITIAL_CAP": 440,
     # Max number of outgoing edges (connections) for each node in a graph layer.
-    "M": 12,
+    "M": 32,
     # Max number of connected neighbors to consider during graph building.
     # Higher values increase accuracy, but also increase index build time.
-    "EF_CONSTRUCTION": 150,
+    "EF_CONSTRUCTION": 512,
     # Max top candidates during KNN search. Higher values increase accuracy, but also increase search latency.
     "EF_RUNTIME": 10,
 }
@@ -27,7 +27,7 @@ LAUNCH_PARAMETERS = {
     "server_port": 7860,
     "share": True,
     "debug": False,
-    "show_api": True,
+    "show_api": False,
     "pwa": True,
     "mcp_server": False,
 }

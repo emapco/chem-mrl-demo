@@ -1,5 +1,5 @@
 smiles,name,category
-O=C1CCCCC1(c1ccccc1Cl)N1CCCCC1,2-Cl-2′-Oxo-PCP,arylcycloalkylamine
+O=C1CCCCC1(c1ccccc1Cl)N1CCCCC1,2-Cl-2'-Oxo-PCP,arylcycloalkylamine
 CCCCNC1(c2ccccc2)CCCCC1,PCB,arylcycloalkylamine
 COc1ccccc1C1(N2CCCCC2)CCCCC1,2-MeO-PCP,arylcycloalkylamine
 c1ccc(C2(n3cccc3)CCCCC2)cc1,PCPyrrole,arylcycloalkylamine
@@ -8,7 +8,7 @@ COc1ccc(C2(NCC3CCCO3)CCCCC2)cc1,1-(4-Methoxyphenyl)-N-[(oxolan-2-yl)methyl]cyclo
 COc1ccc(C2(N3CCCC3)CC3CCC2C3)cc1,4-MeO-PBCHPy,arylcycloalkylamine
 C=CCN(CC)C1(c2ccccc2)CCCCC1,N-Allyl-PCE,arylcycloalkylamine
 CCCCCNC1(c2ccccc2)CCCCC1,PCPe,arylcycloalkylamine
-OC1CCCCC1(c1ccccc1)N1CCCCC1,2′-HO-PCP,arylcycloalkylamine
+OC1CCCCC1(c1ccccc1)N1CCCCC1,2'-HO-PCP,arylcycloalkylamine
 Cc1ccccc1C1(N2CCCC(O)C2)CCCCC1,3″-HO-2-Me-PCP,arylcycloalkylamine
 c1ccc(C2(N3CCCCC3)CCCC2)cc1,PCPEP,arylcycloalkylamine
 CCN(C)C1(c2ccccc2C)CCCCC1,2-Me-PCEM,arylcycloalkylamine
@@ -26,7 +26,7 @@ COc1cccc(C2(N3CCCCC3)CCCc3ccccc32)c1,"1-[1-(3-Methoxyphenyl)-1,2,3,4-tetrahydron
 CCNC12CCCCC1CCc1ccccc12,"N-Ethyl-1,3,4,9,10,10a-hexahydrophenanthren-4a(2H)-amine",arylcycloalkylamine
 c1ccc([C@]2(N3CCCCC3)C[C@H]3C[C@H]3C2)cc1,"1-[(1R,3r,5S)-3-Phenylbicyclo[3.1.0]hexan-3-yl]piperidine",arylcycloalkylamine
 c1ccc(C2(N3CCCCC3)CN3CCC2CC3)cc1,P3QP,arylcycloalkylamine
-COc1cccc(C2(N3CCCC3)CCCCC2=O)c1,3-MeO-2′-Oxo-PCPy,arylcycloalkylamine
+COc1cccc(C2(N3CCCC3)CCCCC2=O)c1,3-MeO-2'-Oxo-PCPy,arylcycloalkylamine
 c1cc2c(cc1C1(N3CCCCC3)CCCCC1)OCCO2,"3,4-ED-PCP",arylcycloalkylamine
 NC1(c2ccccc2Cl)CCCNC1=O,3-Amino-3-(2-chlorophenyl)piperidin-2-one,arylcycloalkylamine
 CC[C@]1(c2ccccc2)OC[C@H]([C@@H]2CCCCN2)O1,CL-1848C,arylcycloalkylamine
@@ -34,7 +34,7 @@ O=[N+]([O-])c1cccc(C2(N3CCCCC3)CCCCC2)c1,3-NO2-PCP,arylcycloalkylamine
 Fc1cccc(C2(N3CCCCC3)CCCCCC2)c1,3F-PCHEP,arylcycloalkylamine
 CCNC1(c2cccc(OC(C)C)c2)CCCCC1=O,iPXE,arylcycloalkylamine
 COc1cc(C2(N3CCCCC3)CCCCC2)ccc1C,3-MeO-4-Me-PCP,arylcycloalkylamine
-O=C1CCC(c2ccccc2)(N2CCCCC2)CC1,4′-Oxo-PCP,arylcycloalkylamine
+O=C1CCC(c2ccccc2)(N2CCCCC2)CC1,4'-Oxo-PCP,arylcycloalkylamine
 CCNC1(c2ccc3c(c2)OCO3)CCCCC1,"3,4-MD-PCE",arylcycloalkylamine
 CNC1(c2ccccc2OC)CCCCC1=O,2-MDCK,arylcycloalkylamine
 CCOc1cccc(C2(N3CCCCC3)CCCCC2)c1,3-EtO-PCP,arylcycloalkylamine
@@ -43,8 +43,8 @@ CNC1(c2cccc(Cl)c2)CCCCC1=O,meta-Ketamine,arylcycloalkylamine
 CCNC1(c2cc(OC)ccc2Br)CCCCC1=O,Bromo-methoxetamine,arylcycloalkylamine
 CNC1(c2cccc(OC)c2)CCCCC1=O,MXM,arylcycloalkylamine
 CCCOC(=O)CCNC1(c2ccccc2Cl)CCCCC1=O,nPr-NKE-Et,arylcycloalkylamine
-CC1CCCCC1(c1ccccc1)N1CCCCC1,2′-Me-PCP,arylcycloalkylamine
-Cc1ccc(C2(N3CCC(O)CC3)CCCCC2O)cc1,"2′,4″-HO-4-Me-PCP",arylcycloalkylamine
+CC1CCCCC1(c1ccccc1)N1CCCCC1,2'-Me-PCP,arylcycloalkylamine
+Cc1ccc(C2(N3CCC(O)CC3)CCCCC2O)cc1,"2',4″-HO-4-Me-PCP",arylcycloalkylamine
 NC1(c2ccccc2Cl)CCC(O)CC1=O,"(2,5)-HNK",arylcycloalkylamine
 Fc1cccc(C2(N3CCCCC3)CC3CCC2C3)c1,3F-PBCHP,arylcycloalkylamine
 CC(C)NC1(c2ccccc2)CCCCC1,PCiP,arylcycloalkylamine
@@ -135,7 +135,7 @@ Cc1ccc(C(=O)NC(C)(C)c2ccccc2)cc1S(=O)(=O)N1CCC(F)(F)CC1,SGT-233,cannabinoid
 CCCCCn1nc(C(=O)c2ccc(OC)c3ccccc23)c2ccccc21,SGT-35,cannabinoid
 CC1(C)C(C(=O)c2cn(CC3CCCCC3)c3ccccc23)C1(C)C,(CHM) UR-144,cannabinoid
 CN1CCCCC1Cn1cc(C(=O)c2ccc(N=C=S)c3ccccc23)c2ccc(N=C=S)cc21,AM-2215,cannabinoid
-CCCCCCC1(c2ccc(-c3cc(C)cc(C)c3)c(O)c2)CC1,"4-(1-Hexylcyclopropyl)-3′,5′-dimethyl[1,1′-biphenyl]-2-ol",cannabinoid
+CCCCCCC1(c2ccc(-c3cc(C)cc(C)c3)c(O)c2)CC1,"4-(1-Hexylcyclopropyl)-3',5'-dimethyl[1,1'-biphenyl]-2-ol",cannabinoid
 COC(=O)[C@@H](NC(=O)c1cn(Cc2ccc(F)cc2)c2ncccc12)C(C)(C)C,MDMB-FUB7AICA,cannabinoid
 CN1CCCCC1Cn1cc(C(=O)c2ccccc2I)c2ccccc21,AM-2233,cannabinoid
 O=C(c1cccc2ccccc12)n1c(-c2ccncc2)nc2ccccc21,(Naphthalen-1-yl)[2-(pyridin-4-yl)-1H-benzimidazol-1-yl]methanone,cannabinoid
@@ -149,7 +149,7 @@ CN1CCCCC1Cn1cc(C(=O)c2ccc([N+](=O)[O-])c3ccccc23)c2ccccc21,AM-1299,cannabinoid
 CCc1c(C)cc(C(=O)NC2(C(=O)O)CCCCC2)c(=O)n1Cc1ccc(F)cc1,S-777469,cannabinoid
 CCCCCC(C)NC(=O)c1nn(CCCCC)c2ccccc12,SGT-71,cannabinoid
 CC1(C)Oc2cc(C34CC5CC(CC(C5)C3)C4)cc(O)c2[C@@H]2CC(O)CC[C@H]21,"(6aR,10aR)-3-(Adamantan-1-yl)-6,6-dimethyl-6a,7,8,9,10,10a-hexahydro-6H-dibenzo[b,d]pyran-1,9-diol",cannabinoid
-C=C(C)[C@H]1CCC(CO)=C[C@@H]1c1c(O)cc(C(C)(C)CCCCN2CCOCC2)cc1O,"(1′S,2′S)-5′-(Hydroxymethyl)-4-[2-methyl-6-(morpholin-4-yl)hexan-2-yl]-2′-(prop-1-en-2-yl)-1′,2′,3′,4′-tetrahydro[1,1′-biphenyl]-2,6-diol",cannabinoid
+C=C(C)[C@H]1CCC(CO)=C[C@@H]1c1c(O)cc(C(C)(C)CCCCN2CCOCC2)cc1O,"(1'S,2'S)-5'-(Hydroxymethyl)-4-[2-methyl-6-(morpholin-4-yl)hexan-2-yl]-2'-(prop-1-en-2-yl)-1',2',3',4'-tetrahydro[1,1'-biphenyl]-2,6-diol",cannabinoid
 O=C(N/N=C1\C(=O)N(CCCCCF)c2ccccc21)c1ccccc1,BZO-5F-POXIZID,cannabinoid
 CCCCCOc1c(OC)ccc2cc(C(=O)NCc3ccc4c(c3)OCO4)c(=O)[nH]c12,JTE-907,cannabinoid
 CCCCn1nc(C(=O)N[C@@H](Cc2ccccc2)C(=O)OC)c2ccccc21,MPP(N)-073,cannabinoid
@@ -166,7 +166,7 @@ Fc1ccc2nc(-c3ccccn3)n(Cc3cccc4ccccc34)c2c1,6-Fluoro-1-[(naphthalen-1-yl)methyl]-
 CCCCCn1cc(C(=O)N[C@@H](C)c2ccccc2)c2ccccc21,1-Pentyl-N-[(1S)-1-phenylethyl]-1H-indole-3-carboxamide,cannabinoid
 CCCCCCCC(C)c1cc(OC(=O)CCCN(CC)CC)c2c(c1)OC(C)(C)C1=C2CC(C)CC1,SP-325,cannabinoid
 CCCCCn1cc(C(=O)c2cccc3ccccc23)cc1-c1cccc(C)c1,JWH-346,cannabinoid
-O=C(Cc1ccccc1)N/N=C1\C(=O)N(CC2CCCCC2)c2cc(OCCN3CCOCC3)ccc21,"N′-{1-(Cyclohexylmethyl)-6-[2-(morpholin-4-yl)ethoxy]-2-oxo-1,2-dihydro-3H-indol-3-ylidene}-2-phenylacetohydrazide",cannabinoid
+O=C(Cc1ccccc1)N/N=C1\C(=O)N(CC2CCCCC2)c2cc(OCCN3CCOCC3)ccc21,"N'-{1-(Cyclohexylmethyl)-6-[2-(morpholin-4-yl)ethoxy]-2-oxo-1,2-dihydro-3H-indol-3-ylidene}-2-phenylacetohydrazide",cannabinoid
 Cc1c(C(=O)C2C(C)(C)C2(C)C)c2ccccc2n1CCCCCF,2-Me-XLR-11,cannabinoid
 COc1ccc2c(c1)CCC2CNC(=O)c1cn(CCCCCF)c2ccccc12,SGT-105,cannabinoid
 CCCCCc1cc(O)c2c(c1)OC(C)(C)C(CCC(C)=O)C2=O,CBCN,cannabinoid
@@ -241,7 +241,7 @@ CCCCC(=O)N(c1ccc(OC)cc1)C1CCN(CCc2ccccc2)CC1,p-Methoxy-valerylfentanyl,fentanyl
 CCC(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)CC1F,NFEPP,fentanyl
 CCC(=O)N(c1ccccc1)C1CCN(C(C)Cc2cc(OC)c(Br)cc2OC)CC1,N-(DOB) fentanyl,fentanyl
 CCCC(=O)N(c1ccccc1)C1CCN(C)CC1,N-Methyl-butyrylfentanyl,fentanyl
-O=C(c1ccco1)N(c1ccccc1)C1CCN(CCc2ccc(O)cc2)CC1,4′-Hydroxy-furanylfentanyl,fentanyl
+O=C(c1ccco1)N(c1ccccc1)C1CCN(CCc2ccc(O)cc2)CC1,4'-Hydroxy-furanylfentanyl,fentanyl
 CCC(=O)OCC1(N(C(=O)CC)c2ccccc2)CCN(CCN2C(=O)c3ccccc3C2=O)CC1,"{1-[2-(1,3-Dioxo-1,3-dihydro-2H-isoindol-2-yl)ethyl]-4-[phenyl(propanoyl)amino]piperidin-4-yl}methyl propanoate",fentanyl
 CCC(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)C(C)C1,2-Methylfentanyl,fentanyl
 CC(=O)N(c1ccccc1)C1CCN(CCCc2ccccc2)CC1,Phenylpropyl-acetyl-norfentanyl,fentanyl
@@ -286,7 +286,7 @@ CCC(=O)[N+]([O-])(c1ccccc1)C1(C(=O)OC)CCN(CCc2ccccc2)CC1,Carfentanil N-oxide,fen
 CCC(=O)N(c1ccccc1)C1(C(=O)OC)CCN(CCc2cccc(O)c2)CC1,3″-Hydroxycarfentanil,fentanyl
 CCC(=O)N(c1ccccc1)C1CCN(C(C)C(=O)OC(C)C)CC1,Propan-2-yl 2-{4-[phenyl(propanoyl)amino]piperidin-1-yl}propanoate,fentanyl
 O=C(C1CCC1)N(c1ccc(Cl)cc1)C1CCN(CCc2ccccc2)CC1,p-Chloro-cyclobutylfentanyl,fentanyl
-CCC(C)C(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)CC1,alpha′-Methyl-butyrylfentanyl,fentanyl
+CCC(C)C(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)CC1,alpha'-Methyl-butyrylfentanyl,fentanyl
 Oc1cc2c(cc1O)CNCC2,Norsalsolinol,neurotoxin
 CC(N)Cc1ccc(Cl)cc1,PCA,neurotoxin
 CC1NCCc2cc(O)c(O)cc21,Salsolinol,neurotoxin
@@ -376,12 +376,12 @@ CNC(C)Cc1c[nH]c2ccc(OCc3ccccc3)cc12,5-Benzyloxy-alpha-methyl-NMT,tryptamine
 CC(C)(C)CCCCCCCOc1ccc2[nH]cc(CCN)c2c1,"5-(8,8-Dimethylnonyloxy)-T",tryptamine
 CCCOc1ccc2[nH]cc(CCN(CC)CC)c2c1,5-PrO-DET,tryptamine
 COc1ccc2[nH]cc(CCN(C)CCCc3cc(OC)c(OC)c(OC)c3)c2c1,"N-(3,4,5-Trimethoxyphenylpropyl)-5-MeO-NMT",tryptamine
-c1ccc2c(CCN3CCN(CCc4c[nH]c5ccccc45)CC3)c[nH]c2c1,"3,3′-[Piperazine-1,4-diyldi(ethane-2,1-diyl)]di(1H-indole)",tryptamine
+c1ccc2c(CCN3CCN(CCc4c[nH]c5ccccc45)CC3)c[nH]c2c1,"3,3'-[Piperazine-1,4-diyldi(ethane-2,1-diyl)]di(1H-indole)",tryptamine
 CC(C)N(CCc1c[nH]c2cccc(OCc3ccccc3)c12)C(C)C,4-Benzyloxy-DIPT,tryptamine
 CC(C)N(CCc1c[nH]c2ccc(F)cc12)C1CCC1,5-Fluoro-IPCBT,tryptamine
 CCOc1ccc(CNCCc2c[nH]c3ccccc23)cc1,T-NB4OEt,tryptamine
 O=C(O)CCNCCc1c[nH]c2cc([N+](=O)[O-])ccc12,6-Nitro-N-(2-carboxyethyl)tryptamine,tryptamine
-CN1CCN(CCc2c[nH]c3cccc(O)c23)CC1,4′-Methyl-4-HO-piperazine-T,tryptamine
+CN1CCN(CCc2c[nH]c3cccc(O)c23)CC1,4'-Methyl-4-HO-piperazine-T,tryptamine
 CN(CCC#N)CCc1c[nH]c2ccccc12,N-Cyanoethyl-NMT,tryptamine
 COc1cc(F)c2[nH]cc(CCN(C)C)c2c1,7-Fluoro-5-MeO-DMT,tryptamine
 CN(CCc1c[nH]c2ccc(F)cc12)C1CCC1,5-Fluoro-MCBT,tryptamine

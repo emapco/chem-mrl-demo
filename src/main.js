@@ -65,9 +65,6 @@ function initializeJSME() {
     jsmeApplet.setCallBack("AfterStructureModified", handleJSMEStructureChange);
     jsmeApplet.setMenuScale(getJsmeGuiScale());
     jsmeApplet.setUserInterfaceBackgroundColor("#adadad");
-    jsmeApplet.setMolecularAreaAntiAlias(true);
-    jsmeApplet.setMolecularAreaLineWidth(2);
-    jsmeApplet.setAtomMolecularAreaFontSize(20);
 
     // Set initial molecule and sync state
     jsmeApplet.readGenericMolecularInput(DEFAULT_SMILES);

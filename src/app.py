@@ -1,7 +1,6 @@
 import gradio as gr
 import numpy as np
 import pandas as pd
-from chem_mrl.molecular_fingerprinter import MorganFingerprinter
 from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem.Draw import rdMolDraw2D
@@ -26,17 +25,14 @@ class App:
             if not smiles or smiles.strip() == "":
                 return [], [], "Please provide a valid SMILES string"
 
-            # Preprocess smiles similarly as training data for optimal performance
-            smiles = MorganFingerprinter.canonicalize_smiles(smiles) or smiles
-
             logger.info(f"Running similarity search: {smiles} - ({embed_dim})")
             embedding = self.embedding_service.get_molecular_embedding(smiles, embed_dim)
             neighbors = self.embedding_service.find_similar_molecules(embedding, embed_dim)
 
-            return embedding.tolist(), neighbors, "Analysis completed successfully"
+            return embedding.tolist(), neighbors, "Search completed successfully"
 
         except Exception as e:
-            error_msg = f"Analysis failed: {str(e)}"
+            error_msg = f"Search failed: {str(e)}"
             logger.error(error_msg)
             return [], [], error_msg
 
@@ -123,7 +119,7 @@ class App:
 
             [Model Repo](https://github.com/emapco/chem-mrl) | [Demo Repo](https://github.com/emapco/chem-mrl-demo)
             """)
-            with gr.Tab("🔬 Molecule Analysis"), gr.Row():
+            with gr.Tab("🔬 Molecular Search"), gr.Row():
                 with gr.Column(scale=1):
                     gr.Markdown("### Molecule Input")
                     gr.HTML("<div id='jsme_container'></div>")
@@ -151,7 +147,7 @@ class App:
                         clear_btn = gr.Button("🗑️ Clear All", variant="secondary")
 
                 with gr.Column(scale=1):
-                    gr.Markdown("### Analysis Results")
+                    gr.Markdown("### Search Results")
                     status_output = gr.Textbox(
                         label="Status",
                         interactive=False,
@@ -187,7 +183,6 @@ class App:
                     with gr.Column(scale=1):
                         self._display_sample_molecules(SAMPLE_SMILES[2::3])
 
-            # Main analysis
             search_btn.click(
                 fn=self.handle_search,
                 inputs=[smiles_input, embedding_dimension],
