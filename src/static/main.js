@@ -58,7 +58,7 @@ function initializeJSME() {
       CONTAINER_HEIGHT,
       {
         options:
-          "rButton,zoom,zoomgui,newLook,star,multipart,polarnitro,NOexportInChI,NOexportInChIkey,NOsearchInChIkey,NOexportSVG,NOpaste",
+          "NOcanonize,rButton,zoom,zoomgui,newLook,star,multipart,polarnitro,NOexportInChI,NOexportInChIkey,NOsearchInChIkey,NOexportSVG,NOpaste",
       }
     );
 

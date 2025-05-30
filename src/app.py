@@ -98,11 +98,11 @@ class App:
     def create_gradio_interface(self):
         """Create the Gradio interface optimized for JavaScript client usage"""
         head_scripts = """
-<link rel="preconnect" href="https://jsme-editor.github.io">
-<link rel="preload" href="https://jsme-editor.github.io/dist/jsme/jsme.nocache.js" as="script" crossorigin="anonymous">
-<link rel="preload" href="gradio_api/file=src/main.min.js" as="script">
-<script type="text/javascript" src="https://jsme-editor.github.io/dist/jsme/jsme.nocache.js" crossorigin="anonymous" defer></script>
-<script type="text/javascript" src="gradio_api/file=src/main.min.js" defer></script>
+<link rel="preload" href="gradio_api/file=src/static/jsme/jsme.nocache.js" as="script">
+<link rel="preload" href="gradio_api/file=src/static/main.min.js" as="script">
+<link rel="preload" href="gradio_api/file=src/static/jsme/4277561D0E87B89F4DFCCC3A712D5B19.cache.js" as="script">
+<script src="gradio_api/file=src/static/jsme/jsme.nocache.js" defer></script>
+<script src="gradio_api/file=src/static/main.min.js" defer></script>
         """
 
         with gr.Blocks(
@@ -208,7 +208,7 @@ class App:
                 ],
             )
 
-            gr.set_static_paths(paths=["src/"])
+            gr.set_static_paths(paths=["src/static"])
 
         return demo
 
