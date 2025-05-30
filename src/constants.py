@@ -14,12 +14,12 @@ HNSW_PARAMETERS = {
     # Defines the initial capacity of the vector index. It helps in pre-allocating space for the index.
     "INITIAL_CAP": 440,
     # Max number of outgoing edges (connections) for each node in a graph layer.
-    "M": 24,
+    "M": 12,
     # Max number of connected neighbors to consider during graph building.
     # Higher values increase accuracy, but also increase index build time.
-    "EF_CONSTRUCTION": 384,
+    "EF_CONSTRUCTION": 256,
     # Max top candidates during KNN search. Higher values increase accuracy, but also increase search latency.
-    "EF_RUNTIME": 12,
+    "EF_RUNTIME": 10,
 }
 
 # Gradio launch parameters
