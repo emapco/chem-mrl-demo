@@ -5,6 +5,7 @@ from typing import TypedDict
 import numpy as np
 import pandas as pd
 import redis
+import torch
 from chem_mrl.molecular_fingerprinter import MorganFingerprinter
 from dotenv import load_dotenv
 from redis.commands.search.field import TextField, VectorField
@@ -18,6 +19,7 @@ from constants import (
     HNSW_PARAMETERS,
     MODEL_NAME,
     SUPPORTED_EMBEDDING_DIMENSIONS,
+    USE_HALF_PRECISION,
 )
 from data import DATASET_SMILES, ISOMER_DESIGN_SUBSET
 
@@ -31,7 +33,7 @@ def setup_logger(clear_handler=False):
     return logger
 
 
-load_dotenv()
+load_dotenv("../.env")
 logger = setup_logger(clear_handler=True)
 
 
@@ -55,7 +57,12 @@ class MolecularEmbeddingService:
     def _initialize_model(self):
         """Initialize the Hugging Face transformers model"""
         try:
-            model = SentenceTransformer(self.model_name)  # type: ignore
+            model = SentenceTransformer(
+                self.model_name,
+                model_kwargs={
+                    "torch_dtype": torch.float16 if USE_HALF_PRECISION else torch.float32,
+                },
+            )
             model.eval()
             return model
         except Exception as e:
@@ -68,6 +75,9 @@ class MolecularEmbeddingService:
             redis_host = os.getenv("REDIS_HOST", "localhost")
             redis_port = int(os.getenv("REDIS_PORT", 6379))
             redis_password = os.getenv("REDIS_PASSWORD", None)
+            logger.info(
+                f"Connecting to Redis at {redis_host}:{redis_port} with password: {'***' if redis_password else 'None'}"
+            )
             redis_client = redis.Redis(
                 host=redis_host,
                 port=redis_port,
@@ -128,9 +138,11 @@ class MolecularEmbeddingService:
                 if self.redis_client.exists(key):
                     continue
 
+                embedding_cache: np.ndarray = self.get_molecular_embedding(row["smiles"], EMBEDDING_DIMENSION)
+
                 mapping: dict[str, bytes | str] = {
-                    self.embedding_field_name(embed_dim): self.get_molecular_embedding(
-                        row["smiles"], embed_dim
+                    self.embedding_field_name(embed_dim): self._truncate_and_normalize_embedding(
+                        embedding_cache.copy(), embed_dim
                     ).tobytes()
                     for embed_dim in SUPPORTED_EMBEDDING_DIMENSIONS
                 }
@@ -180,7 +192,7 @@ class MolecularEmbeddingService:
     ) -> list[SimilarMolecule]:
         """Find k most similar molecules using HNSW"""
         try:
-            query_vector = query_embedding.astype(np.float32).tobytes()
+            query_vector = query_embedding.tobytes()
             query = (
                 Query(f"*=>[KNN {k} @{self.embedding_field_name(embed_dim)} $vec AS score]")
                 .sort_by("score")
