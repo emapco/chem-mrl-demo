@@ -2,25 +2,35 @@
 demo:
 	docker compose down || true
 	docker compose up -d redis
+# run locally so gradio share link functionality works
 	CUDA_VISIBLE_DEVICES="0" .venv/bin/python src/app.py
 
-spaces:
-	docker compose down || true
-	docker compose up -d spaces
+# hf spaces free-tier build process times-out when creating the redis index
+# thus we precompute index and deploy the redis dump
+.PHONY: deploy_spaces_deployment clean gen_new_embed_index copy_changes
+deploy_spaces_deployment: clean gen_new_embed_index copy_changes
+# add to hf repo for automated deployment
+	cd spaces-deployment && git add . && \
+	git commit -m "push new db or demo version" && \
+	git push origin main
 
-clear:
+clean:
+	docker compose down || true
 	sudo rm redis_data/dump.rdb || true
 
-deploy_spaces_deployment: clear
-	make demo &
-	sleep 45
+gen_new_embed_index:
+	docker compose up -d redis
+#	workaround to kill background process
+	CUDA_VISIBLE_DEVICES="0" .venv/bin/python src/app.py & \
+	APP_PID=$$! && \
+	sleep 45 && \
+	kill $$APP_PID || true
 	docker compose down
-# copy new data and code
+
+CURRENT_UID := $(shell id -u)
+CURRENT_GID := $(shell id -g)
+copy_changes:
 	cp -r src/ spaces-deployment
 	cp requirements.txt spaces-deployment/requirements.txt
-	sudo cp redis_data/dump.rdb spaces-deployment/
-	sudo chown manny:manny spaces-deployment/dump.rdb
-# add to origin repo for automated deployment
-	git add .
-	git commit -m "push new db or demo version"
-	git push origin main
+	sudo chown ${CURRENT_UID}:${CURRENT_UID} redis_data/dump.rdb
+	cp redis_data/dump.rdb spaces-deployment
