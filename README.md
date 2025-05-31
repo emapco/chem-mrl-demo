@@ -21,22 +21,25 @@ docker compose up
 ### Manual Setup
 
 1. **Install Dependencies**
+
 ```bash
 pip install -r requirements.txt
 ```
 
 2. **Start Redis**
+
 ```bash
 redis-server
 ```
 
 3. **Start App**
+
 ```bash
 python app.py
 ```
 
-4. **Open Application**
-Navigate to `http://localhost:7860`
+### Access Application
+Navigate to [http://localhost:7860](http://localhost:7860)
 
 ## Architecture
 
@@ -45,13 +48,13 @@ Navigate to `http://localhost:7860`
 │   JSME Editor   │───▶  Gradio API      ───▶│  Chem-MRL       │
 │   (Frontend)    │    │  (Backend)      │    │  (HF Model)     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │                      
-                                ▼                      
-                       ┌─────────────────┐             
-                       │  Redis + HNSW   │             
-                       │  (Vector DB)    │             
-                       └─────────────────┘             
-                                │                      
+                                │
+                                ▼
+                       ┌─────────────────┐
+                       │  Redis + HNSW   │
+                       │  (Vector DB)    │
+                       └─────────────────┘
+                                │
                                 │
                                 ▼
                        ┌─────────────────┐
@@ -63,12 +66,14 @@ Navigate to `http://localhost:7860`
 ## Configuration
 
 Environment variables in `.env`:
+
 - `REDIS_HOST`
 - `REDIS_PORT`
 - `REDIS_PASSWORD`
 
 ## Visualization Data
-The `visualization` directory contains embeddings of the [Isomer Design](https://isomerdesign.com/pihkal/search) SMILES dataset, with various embedding sizes. The `.tsv` files can be visualized using [TensorFlow Projector](https://projector.tensorflow.org/) or viewed directly using the links below.
+
+The `visualization` directory contains embeddings of the [Isomer Design](https://isomerdesign.com/pihkal/search) SMILES dataset ([![License: CC BY-NC-SA 4.0](https://mirrors.creativecommons.org/presskit/buttons/80x15/svg/by-nc-sa.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)), with various embedding sizes. The `.tsv` files can be visualized using [TensorFlow Projector](https://projector.tensorflow.org/) or viewed directly using the links below.
 
 | Embedding Dimension | URL |
 |---------------------|-----|
@@ -78,7 +83,6 @@ The `visualization` directory contains embeddings of the [Isomer Design](https:/
 | 32 | [32 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/32-template_project_config.json) |
 | 4 | [4 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/4-template_project_config.json) |
 | 2 | [2 embeddings](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/emapco/chem-mrl-demo/refs/heads/main/visualization/2-template_project_config.json) |
-
 
 ## License
 

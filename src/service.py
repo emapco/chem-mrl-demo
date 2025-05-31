@@ -92,7 +92,6 @@ class MolecularEmbeddingService:
 
     def _initialize_datastore(self):
         self.__create_hnsw_index()
-        self.__populate_sample_data(DATASET_SMILES)
         self.__populate_sample_data(ISOMER_DESIGN_SUBSET)
 
     def __create_hnsw_index(self):

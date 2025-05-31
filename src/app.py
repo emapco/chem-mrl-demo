@@ -113,12 +113,22 @@ class App:
             gr.Markdown("""
             # 🧪 Chem-MRL: Molecular Similarity Search Demo
 
-            Use the JSME editor to draw a molecule or input a SMILES string.
-            The backend encodes the molecule using the Chem-MRL model to produce a vector embedding.
-            Similarity search is performed via an HNSW-indexed Redis vector store to retrieve closest matches.<br/>
-
-            [Model Repo](https://github.com/emapco/chem-mrl) | [Demo Repo](https://github.com/emapco/chem-mrl-demo)
+            Use the JSME editor to draw a molecule or input a SMILES string.<br/>
+            The backend encodes the molecule using the Chem-MRL model to produce a vector embedding.<br/>
+            Similarity search is performed via an HNSW-indexed Redis vector store to retrieve closest matches.
             """)
+            gr.HTML(
+                """
+            The Redis database indexes a curated subset of molecules from <a href="https://isomerdesign.com/pihkal/home">Isomer Design</a>
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                <img src="https://mirrors.creativecommons.org/presskit/buttons/80x15/svg/by-nc-sa.svg" alt="License: CC BY-NC-SA 4.0"
+             style="display:inline; height:15px; vertical-align:middle; margin-left:4px;"/>
+            </a>""",  # noqa: E501
+                padding=False,
+            )
+            gr.Markdown(
+                "[Model Repo](https://github.com/emapco/chem-mrl) | [Demo Repo](https://github.com/emapco/chem-mrl-demo)"
+            )
             with gr.Tab("🔬 Molecular Search"), gr.Row():
                 with gr.Column(scale=1):
                     gr.Markdown("### Molecule Input")
