@@ -23,7 +23,7 @@ gen_new_embed_index:
 #	workaround to kill background process
 	CUDA_VISIBLE_DEVICES="0" .venv/bin/python src/app.py & \
 	APP_PID=$$! && \
-	sleep 45 && \
+	sleep 90 && \
 	kill $$APP_PID || true
 	docker compose down
 
@@ -31,6 +31,7 @@ CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
 copy_changes:
 	cp -r src/ spaces-deployment
-	cp requirements.txt spaces-deployment/requirements.txt
+	cp requirements.txt spaces-deployment
+	cp HF.Dockerfile spaces-deployment/Dockerfile
 	sudo chown ${CURRENT_UID}:${CURRENT_UID} redis_data/dump.rdb
 	cp redis_data/dump.rdb spaces-deployment

@@ -45,7 +45,7 @@ class App:
         mols = [Chem.MolFromSmiles(m["smiles"]) for m in similar]
         legends = [
             f"{cls._truncated_attribute(m, 'name')}\n{m['category']}\n"
-            f"{cls._truncated_attribute(m, 'smiles')}\n({m['score']:.2E})"
+            f"{cls._truncated_attribute(m, 'smiles')}\n{m['score']:.2E}"
             for m in similar
         ]
 

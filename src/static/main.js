@@ -101,6 +101,9 @@ function handleJSMEStructureChange(event) {
  */
 function getJsmeGuiScale() {
   const width = getJsmeContainerWidthNumber();
+  if (width == null || width <= 0) {
+    return 1;
+  }
   let menuScale;
   if (width > 460) {
     menuScale = 1.3;
@@ -136,10 +139,7 @@ function getJsmeContainerWidthPx() {
  */
 function getJsmeContainerWidthNumber() {
   const container = document.getElementById("jsme_container");
-  if (!container) {
-    return null;
-  }
-  return container.parentNode.offsetWidth;
+  return container?.parentNode?.offsetWidth;
 }
 
 // ============================================================================
@@ -154,8 +154,7 @@ function getJsmeContainerWidthNumber() {
 function updateGradioTextbox(smiles) {
   try {
     const textbox = document.querySelector(SMILES_INPUT_SELECTOR);
-
-    if (!textbox || textbox.value === smiles) {
+    if (textbox?.value === smiles) {
       return;
     }
 
@@ -184,15 +183,11 @@ function updateGradioTextbox(smiles) {
  * @param {string} smiles - The SMILES string to display in JSME
  */
 function updateJSMEFromTextbox(smiles) {
-  if (!jsmeApplet) {
-    return;
-  }
-
   try {
-    if (smiles && smiles.trim() !== "") {
-      jsmeApplet.readGenericMolecularInput(smiles.trim());
+    if (smiles?.trim() !== "") {
+      jsmeApplet?.readGenericMolecularInput(smiles.trim());
     } else {
-      jsmeApplet.reset();
+      jsmeApplet?.reset();
     }
     lastTextboxValue = smiles;
   } catch (error) {
@@ -243,13 +238,9 @@ function handleTextboxPaste(event) {
  * Handles window resize events and updates JSME applet width
  */
 function handleResize() {
-  if (!jsmeApplet) {
-    return;
-  }
-
   try {
-    jsmeApplet.setMenuScale(getJsmeGuiScale());
-    jsmeApplet.setWidth(getJsmeContainerWidthPx());
+    jsmeApplet?.setMenuScale(getJsmeGuiScale());
+    jsmeApplet?.setWidth(getJsmeContainerWidthPx());
   } catch (error) {
     console.error("Error resizing JSME applet:", error);
   }
@@ -266,10 +257,7 @@ function handleResize() {
  * @public
  */
 window.setJSMESmiles = function (smiles) {
-  if (jsmeApplet) {
-    updateJSMEFromTextbox(smiles);
-  }
-
+  updateJSMEFromTextbox(smiles);
   updateGradioTextbox(smiles);
   return smiles;
 };
@@ -280,10 +268,7 @@ window.setJSMESmiles = function (smiles) {
  * @public
  */
 window.clearJSME = function () {
-  if (jsmeApplet) {
-    jsmeApplet.reset();
-  }
-
+  jsmeApplet?.reset();
   updateGradioTextbox("");
   return ["", [], [], "Cleared - Draw a new molecule or enter SMILES"];
 };
