@@ -23,7 +23,7 @@ gen_new_embed_index:
 #	workaround to kill background process
 	CUDA_VISIBLE_DEVICES="0" .venv/bin/python src/app.py & \
 	APP_PID=$$! && \
-	sleep 90 && \
+	sleep 420 && \
 	kill $$APP_PID || true
 	docker compose down
 
