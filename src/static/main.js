@@ -270,7 +270,7 @@ window.setJSMESmiles = function (smiles) {
 window.clearJSME = function () {
   jsmeApplet?.reset();
   updateGradioTextbox("");
-  return ["", [], [], "Cleared - Draw a new molecule or enter SMILES"];
+  return ["", "", [], [], "Cleared - Draw a new molecule or enter SMILES"];
 };
 
 // ============================================================================

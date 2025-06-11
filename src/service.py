@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from typing import TypedDict
 
 import numpy as np
@@ -21,7 +22,7 @@ from constants import (
     SUPPORTED_EMBEDDING_DIMENSIONS,
     USE_HALF_PRECISION,
 )
-from data import DATASET_SMILES, ISOMER_DESIGN_SUBSET
+from data import ISOMER_DESIGN_DATASET
 
 
 def setup_logger(clear_handler=False):
@@ -40,7 +41,7 @@ logger = setup_logger(clear_handler=True)
 class SimilarMolecule(TypedDict):
     smiles: str
     name: str
-    category: str
+    properties: str
     score: float
 
 
@@ -84,15 +85,24 @@ class MolecularEmbeddingService:
                 password=redis_password,
                 decode_responses=True,
             )
-            redis_client.ping()
-            return redis_client
         except Exception as e:
             logger.error(f"Failed to connect to Redis: {e}")
             raise
 
+        while True:
+            try:
+                redis_client.ping()
+                break
+            except redis.exceptions.BusyLoadingError:
+                time_out = 5
+                logger.warning(f"Redis is loading the dataset in memory. Retrying in {time_out} seconds...")
+                time.sleep(time_out)
+
+        return redis_client
+
     def _initialize_datastore(self):
         self.__create_hnsw_index()
-        self.__populate_sample_data(ISOMER_DESIGN_SUBSET)
+        self.__populate_sample_data(ISOMER_DESIGN_DATASET)
 
     def __create_hnsw_index(self):
         """Create HNSW index for molecular embeddings"""
@@ -195,14 +205,14 @@ class MolecularEmbeddingService:
             query = (
                 Query(f"*=>[KNN {k} @{self.embedding_field_name(embed_dim)} $vec AS score]")
                 .sort_by("score")
-                .return_fields("smiles", "name", "category", "score")
+                .return_fields("smiles", "name", "properties", "score")
                 .dialect(2)
             )
 
             results = self.redis_client.ft(self.index_name).search(query, query_params={"vec": query_vector})
 
             neighbors: list[SimilarMolecule] = [
-                {"smiles": doc.smiles, "name": doc.name, "category": doc.category, "score": float(doc.score)}
+                {"smiles": doc.smiles, "name": doc.name, "properties": doc.properties, "score": float(doc.score)}
                 for doc in results.docs
             ]
 
@@ -211,6 +221,16 @@ class MolecularEmbeddingService:
         except Exception as e:
             logger.error(f"Failed to find similar molecules: {e}")
             return []
+
+    def get_canonical_smiles(self, smiles: str) -> str:
+        """Convert SMILES to canonical SMILES representation"""
+        if not smiles or smiles.strip() == "":
+            return ""
+
+        canonical = MorganFingerprinter.canonicalize_smiles(smiles.strip())
+        if canonical:
+            return canonical
+        return smiles.strip()
 
     @staticmethod
     def embedding_field_name(dim: int) -> str:

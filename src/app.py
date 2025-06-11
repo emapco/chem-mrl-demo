@@ -44,7 +44,7 @@ class App:
     def _draw_molecule_grid(cls, similar: list[SimilarMolecule]) -> np.ndarray:
         mols = [Chem.MolFromSmiles(m["smiles"]) for m in similar]
         legends = [
-            f"{cls._truncated_attribute(m, 'name')}\n{m['category']}\n"
+            f"{cls._truncated_attribute(m, 'name')}\n{m['properties']}\n"
             f"{cls._truncated_attribute(m, 'smiles')}\n{m['score']:.2E}"
             for m in similar
         ]
@@ -57,7 +57,7 @@ class App:
         img = Draw.MolsToGridImage(
             mols,
             legends=legends,
-            molsPerRow=2,
+            molsPerRow=3,
             subImgSize=(250, 250),
             drawOptions=draw_options,
         )
@@ -67,7 +67,9 @@ class App:
     def _display_sample_molecules(mols: pd.DataFrame):
         for _, row in mols.iterrows():
             with gr.Group():
-                gr.Textbox(value=row["smiles"], label=f"{row['name']} ({row['category']})", interactive=False, scale=3)
+                gr.Textbox(
+                    value=row["smiles"], label=f"{row['name']} ({row['properties']})", interactive=False, scale=3
+                )
                 sample_btn = gr.Button(
                     f"Load {row['name']}",
                     scale=1,
@@ -81,7 +83,7 @@ class App:
 
     @staticmethod
     def clear_all():
-        return "", [], [], None, "Cleared - Draw a new molecule or enter SMILES"
+        return "", "", [], [], None, "Cleared - Draw a new molecule or enter SMILES"
 
     def handle_search(self, smiles: str, embed_dim: int):
         if not smiles.strip():
@@ -119,7 +121,7 @@ class App:
             """)
             gr.HTML(
                 """
-            The Redis database indexes a curated subset of molecules from <a href="https://isomerdesign.com/pihkal/home">Isomer Design</a>
+            The Redis database indexes <a href="https://isomerdesign.com/pihkal/home">Isomer Design</a> molecular library.
             <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
                 <img src="https://mirrors.creativecommons.org/presskit/buttons/80x15/svg/by-nc-sa.svg" alt="License: CC BY-NC-SA 4.0"
              style="display:inline; height:15px; vertical-align:middle; margin-left:4px;"/>
@@ -139,6 +141,13 @@ class App:
                         placeholder="Draw a molecule above or enter SMILES here (e.g., CCO for ethanol)",
                         lines=2,
                         elem_id="smiles_input",
+                    )
+
+                    canonical_smiles_output = gr.Textbox(
+                        label="Canonical SMILES",
+                        placeholder="Canonical representation will appear here",
+                        interactive=False,
+                        elem_id="canonical_smiles_output",
                     )
 
                     embedding_dimension = gr.Dropdown(
@@ -193,6 +202,14 @@ class App:
                     with gr.Column(scale=1):
                         self._display_sample_molecules(SAMPLE_SMILES[2::3])
 
+            # Update canonical SMILES when input changes
+            smiles_input.change(
+                fn=self.embedding_service.get_canonical_smiles,
+                inputs=[smiles_input],
+                outputs=[canonical_smiles_output],
+                api_name="get_canonical_smiles",
+            )
+
             search_btn.click(
                 fn=self.handle_search,
                 inputs=[smiles_input, embedding_dimension],
@@ -211,6 +228,7 @@ class App:
                 js="window.clearJSME",
                 outputs=[
                     smiles_input,
+                    canonical_smiles_output,
                     embedding_output,
                     similar_molecules_output,
                     molecule_image,
