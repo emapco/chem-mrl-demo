@@ -6,4 +6,5 @@ __pycache__/
 *.gz
 *.json
 !visualization/*.json
+!src/static/chemwriter/*.json
 *.rdb

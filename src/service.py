@@ -9,6 +9,7 @@ import redis
 import torch
 from chem_mrl.molecular_fingerprinter import MorganFingerprinter
 from dotenv import load_dotenv
+from rdkit import Chem, RDLogger
 from redis.commands.search.field import TextField, VectorField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
@@ -29,6 +30,7 @@ def setup_logger(clear_handler=False):
     if clear_handler:
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)  # issue with sentence-transformer's logging handler
+    RDLogger.DisableLog("rdApp.*")  # type: ignore - DisableLog is an exported function
     logging.basicConfig(format="%(asctime)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO)
     logger = logging.getLogger(__name__)
     return logger
@@ -159,7 +161,7 @@ class MolecularEmbeddingService:
 
                 self.redis_client.hset(
                     key,
-                    mapping=mapping,
+                    mapping=mapping,  # type: ignore
                 )
 
             except Exception as e:
@@ -209,7 +211,12 @@ class MolecularEmbeddingService:
                 .dialect(2)
             )
 
-            results = self.redis_client.ft(self.index_name).search(query, query_params={"vec": query_vector})
+            results = self.redis_client.ft(self.index_name).search(
+                query,
+                query_params={
+                    "vec": query_vector,  # type: ignore
+                },
+            )
 
             neighbors: list[SimilarMolecule] = [
                 {"smiles": doc.smiles, "name": doc.name, "properties": doc.properties, "score": float(doc.score)}
@@ -222,15 +229,27 @@ class MolecularEmbeddingService:
             logger.error(f"Failed to find similar molecules: {e}")
             return []
 
-    def get_canonical_smiles(self, smiles: str) -> str:
+    @staticmethod
+    def get_canonical_smiles(smiles: str | None) -> str:
         """Convert SMILES to canonical SMILES representation"""
         if not smiles or smiles.strip() == "":
             return ""
 
         canonical = MorganFingerprinter.canonicalize_smiles(smiles.strip())
-        if canonical:
-            return canonical
-        return smiles.strip()
+        if canonical is None:
+            return smiles.strip()
+        return canonical
+
+    @staticmethod
+    def get_smiles_from_mol_file(mol_file: str) -> str:
+        """Convert SMILES to canonical SMILES representation"""
+        if not mol_file or mol_file.strip() == "":
+            return ""
+
+        mol = Chem.rdmolfiles.MolFromMolBlock(mol_file)
+        if mol is None:
+            return ""
+        return Chem.MolToSmiles(mol, canonical=True)
 
     @staticmethod
     def embedding_field_name(dim: int) -> str:

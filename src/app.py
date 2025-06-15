@@ -78,7 +78,7 @@ class App:
                 )
                 sample_btn.click(
                     fn=None,
-                    js=f"() => {{window.setJSMESmiles('{row['smiles']}');}}",
+                    js=f"() => {{window.setCWSmiles('{row['smiles']}');}}",
                 )
 
     @staticmethod
@@ -100,28 +100,31 @@ class App:
     def create_gradio_interface(self):
         """Create the Gradio interface optimized for JavaScript client usage"""
         head_scripts = """
-<link rel="preload" href="gradio_api/file=src/static/jsme/jsme.nocache.js" as="script">
+<link rel="preload" href="gradio_api/file=src/static/chemwriter/chemwriter.css" as="style">
+<link rel="preload" href="gradio_api/file=src/static/chemwriter/chemwriter-user.css" as="style">
+<link rel="preload" href="gradio_api/file=src/static/chemwriter/chemwriter.js" as="script">
 <link rel="preload" href="gradio_api/file=src/static/main.min.js" as="script">
-<link rel="preload" href="gradio_api/file=src/static/jsme/4277561D0E87B89F4DFCCC3A712D5B19.cache.js" as="script">
-<script src="gradio_api/file=src/static/jsme/jsme.nocache.js" defer></script>
+<link rel="stylesheet" href="gradio_api/file=src/static/chemwriter/chemwriter.css">
+<link rel="stylesheet" href="gradio_api/file=src/static/chemwriter/chemwriter-user.css">
+<script src="gradio_api/file=src/static/chemwriter/chemwriter.js" defer></script>
 <script src="gradio_api/file=src/static/main.min.js" defer></script>
         """
 
         with gr.Blocks(
             title="Chem-MRL: Molecular Similarity Search Demo",
-            theme=gr.themes.Soft(),
+            theme=gr.themes.Soft(),  # type: ignore
             head=head_scripts,
         ) as demo:
             gr.Markdown("""
             # 🧪 Chem-MRL: Molecular Similarity Search Demo
 
-            Use the JSME editor to draw a molecule or input a SMILES string.<br/>
+            Use the ChemWriter editor to draw a molecule or input a SMILES string.<br/>
             The backend encodes the molecule using the Chem-MRL model to produce a vector embedding.<br/>
             Similarity search is performed via an HNSW-indexed Redis vector store to retrieve closest matches.
             """)
             gr.HTML(
                 """
-            The Redis database indexes <a href="https://isomerdesign.com/pihkal/home">Isomer Design</a> molecular library.
+            The Redis database indexes <a href="https://isomerdesign.com/pihkal/home">Isomer Design's</a> molecular library.
             <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
                 <img src="https://mirrors.creativecommons.org/presskit/buttons/80x15/svg/by-nc-sa.svg" alt="License: CC BY-NC-SA 4.0"
              style="display:inline; height:15px; vertical-align:middle; margin-left:4px;"/>
@@ -134,20 +137,35 @@ class App:
             with gr.Tab("🔬 Molecular Search"), gr.Row():
                 with gr.Column(scale=1):
                     gr.Markdown("### Molecule Input")
-                    gr.HTML("<div id='jsme_container'></div>")
+                    gr.HTML(
+                        '<div id="editor" class="chemwriter" '
+                        'data-chemwriter-ui="editor" '
+                        'data-chemwriter-width="100%" data-chemwriter-height="450"></div>'
+                    )
 
                     smiles_input = gr.Textbox(
                         label="SMILES String",
                         placeholder="Draw a molecule above or enter SMILES here (e.g., CCO for ethanol)",
                         lines=2,
                         elem_id="smiles_input",
+                        show_copy_button=True,
+                    )
+
+                    mol_input = gr.Textbox(
+                        label="Molecule Input",
+                        interactive=False,
+                        elem_id="mol_input",
+                        show_copy_button=True,
+                        visible=False,
                     )
 
                     canonical_smiles_output = gr.Textbox(
                         label="Canonical SMILES",
                         placeholder="Canonical representation will appear here",
+                        lines=2,
                         interactive=False,
                         elem_id="canonical_smiles_output",
+                        show_copy_button=True,
                     )
 
                     embedding_dimension = gr.Dropdown(
@@ -186,12 +204,11 @@ class App:
                             elem_id="similar_molecules_output",
                         )
 
-                    molecule_image = gr.Image(label="Similiar Molecules Grid", type="pil")
+                    molecule_image = gr.Image(label="Similar Molecules Grid", type="pil")
 
             with gr.Tab("📊 Sample Molecules"):
                 gr.Markdown("""
-                ### Sample Molecules in Database
-                Click any button below to load the molecule into the JSME editor:
+                Click any button below to load the molecule into the ChemWriter editor:
                 """)
 
                 with gr.Row():
@@ -210,6 +227,12 @@ class App:
                 api_name="get_canonical_smiles",
             )
 
+            mol_input.change(
+                fn=self.embedding_service.get_smiles_from_mol_file,
+                inputs=[mol_input],
+                outputs=[smiles_input],
+            )
+
             search_btn.click(
                 fn=self.handle_search,
                 inputs=[smiles_input, embedding_dimension],
@@ -225,7 +248,7 @@ class App:
             # Clear UI state
             clear_btn.click(
                 fn=self.clear_all,
-                js="window.clearJSME",
+                js="window.clearCW",
                 outputs=[
                     smiles_input,
                     canonical_smiles_output,

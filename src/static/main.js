@@ -1,165 +1,71 @@
 /**
- * @fileoverview JSME (JavaScript Molecule Editor) integration with Gradio interface
- * Handles bidirectional synchronization between JSME applet and Gradio textbox
+ * @fileoverview ChemWriter integration with Gradio interface
+ * Handles bidirectional synchronization between ChemWriter editor and Gradio textbox
  * @author Manny Cortes ('manny@derifyai.com')
- * @version 0.2.0
+ * @version 0.3.0
  */
 
 // ============================================================================
 // GLOBAL VARIABLES
 // ============================================================================
 
-/** @type {Object|null} The JSME applet instance */
-let jsmeApplet = null;
-
-/** @type {string} Last known value of the textbox to prevent infinite loops */
-let lastTextboxValue = "";
+/** @type {Object|null} The ChemWriter editor instance */
+let editor = null;
+let chemwriter = null;
 
 // ============================================================================
 // CONSTANTS
 // ============================================================================
 
 /** @const {string} Default SMILES for initial molecule (ethanol) */
-const DEFAULT_SMILES = "CCO";
-
-/** @const {string} Container height for JSME applet */
-const CONTAINER_HEIGHT = "450px";
+const DEFAULT_SMILES = "CN(C)CCC1=CNC2=C1C(=CC=C2)OP(=O)(O)O";
 
 /** @const {string} CSS selector for the Gradio SMILES input element */
 const SMILES_INPUT_SELECTOR = "#smiles_input textarea, #smiles_input input";
+
+/** @const {string} CSS selector for the Gradio Mol file input element */
+const MOL_INPUT_SELECTOR = "#mol_input textarea, #mol_input input";
 
 /** @const {number} Delay for paste event handling (ms) */
 const PASTE_DELAY = 50;
 
 /** @const {number} Delay for initialization retry (ms) */
-const INIT_RETRY_DELAY = 2000;
+const INIT_RETRY_DELAY = 250;
 
 /** @const {string[]} Events to trigger for Gradio change detection */
-const GRADIO_CHANGE_EVENTS = ["input", "change", "keyup"];
+const GRADIO_CHANGE_EVENTS = ["input", "change"];
 
 // ============================================================================
 // CORE INITIALIZATION
 // ============================================================================
 
 /**
- * Initializes the JSME applet after the library has been loaded
- * Sets up the molecular editor with default options and callbacks
- * @throws {Error} When JSME initialization fails
+ * Initializes ChemWriter editor and sets up event handlers
  */
-function initializeJSME() {
+function initializeChemWriter() {
   try {
-    console.log("Initializing JSME...");
-    // https://github.com/jsme-editor/jsme-editor.github.io
-    // https://jsme-editor.github.io/dist/api_javadoc/index.html
-    // http://wiki.jmol.org/index.php/Jmol_JavaScript_Object/JME/Options
-    jsmeApplet = new JSApplet.JSME(
-      "jsme_container",
-      getJsmeContainerWidthPx(),
-      CONTAINER_HEIGHT,
-      {
-        options:
-          "NOcanonize,rButton,zoom,zoomgui,newLook,star,multipart,polarnitro,NOexportInChI,NOexportInChIkey,NOsearchInChIkey,NOexportSVG,NOpaste",
-      }
-    );
-
-    jsmeApplet.setCallBack("AfterStructureModified", handleJSMEStructureChange);
-    jsmeApplet.setMenuScale(getJsmeGuiScale());
-    jsmeApplet.setUserInterfaceBackgroundColor("#adadad");
-
-    // Set initial molecule and sync state
-    jsmeApplet.readGenericMolecularInput(DEFAULT_SMILES);
-    lastTextboxValue = DEFAULT_SMILES;
-
-    setupTextboxEventListeners();
-    window.addEventListener("resize", handleResize);
-
-    console.log("JSME initialized successfully");
+    setupSmilesTextboxEventListeners();
+    setupChemWriterEventListeners();
+    editor.setSMILES(DEFAULT_SMILES);
+    console.log("ChemWriter initialized successfully");
   } catch (error) {
-    console.error("Error initializing JSME:", error);
-    throw error;
+    console.error("Error initializing ChemWriter:", error);
   }
-}
-
-/**
- * Handles structure changes in the JSME applet
- * Converts the structure to SMILES and updates the Gradio textbox
- * @param {Event} event - The JSME structure modification event
- */
-function handleJSMEStructureChange(event) {
-  try {
-    const smiles = jsmeApplet.smiles();
-    updateGradioTextbox(smiles);
-  } catch (error) {
-    console.error("Error getting SMILES from JSME:", error);
-  }
-}
-
-/**
- * Calculates the appropriate GUI scale for the JSME applet based on container width
- * Uses breakpoints to determine optimal scaling for different screen sizes
- * @returns {number} The scale factor for the JSME GUI (0.88 to 2.0)
- */
-function getJsmeGuiScale() {
-  const width = getJsmeContainerWidthNumber();
-  if (width == null || width <= 0) {
-    return 1;
-  }
-  let menuScale;
-  if (width > 460) {
-    menuScale = 1.3;
-  } else if (width > 420) {
-    menuScale = 1.1;
-  } else if (width > 370) {
-    menuScale = 1.05;
-  } else if (width > 300) {
-    menuScale = 0.88;
-  } else {
-    menuScale = 2;
-  }
-  return menuScale;
-}
-
-/**
- * Gets the JSME container width as a CSS-compatible string value
- * Returns either a pixel value or percentage based on available width
- * @returns {string} Width as "100%" or "{width}px" format
- */
-function getJsmeContainerWidthPx() {
-  const parentWidth = getJsmeContainerWidthNumber();
-  if (parentWidth == null || parentWidth <= 0) {
-    return "100%";
-  }
-  return `${parentWidth}px`;
-}
-
-/**
- * Gets the numeric width of the JSME container's parent element
- * Used for responsive scaling calculations
- * @returns {number|null} Width in pixels, or null if container not found
- */
-function getJsmeContainerWidthNumber() {
-  const container = document.getElementById("jsme_container");
-  return container?.parentNode?.offsetWidth;
 }
 
 // ============================================================================
-// GRADIO INTEGRATION
+// GRADIO AND CHEMWRITER INTEGRATION
 // ============================================================================
 
 /**
- * Updates the Gradio textbox with a SMILES string
+ * Updates the mol_input Gradio textbox with a mol file string
  * Triggers appropriate events to ensure Gradio detects the change
- * @param {string} smiles - The SMILES string to set in the textbox
  */
-function updateGradioTextbox(smiles) {
+function updateGradioTextbox() {
   try {
-    const textbox = document.querySelector(SMILES_INPUT_SELECTOR);
-    if (textbox?.value === smiles) {
-      return;
-    }
-
-    textbox.value = smiles;
-    lastTextboxValue = smiles;
+    const molTextbox = document.querySelector(MOL_INPUT_SELECTOR);
+    const molFile = editor?.getMolfile();
+    molTextbox.value = molFile;
 
     // Trigger events to ensure Gradio detects the change
     GRADIO_CHANGE_EVENTS.forEach((eventType) => {
@@ -167,31 +73,23 @@ function updateGradioTextbox(smiles) {
         bubbles: true,
         cancelable: true,
       });
-      textbox.dispatchEvent(event);
+      molTextbox.dispatchEvent(event);
     });
   } catch (error) {
     console.error("Error updating Gradio textbox:", error);
   }
 }
 
-// ============================================================================
-// JSME UPDATE FUNCTIONS
-// ============================================================================
-
 /**
- * Updates the JSME applet with a SMILES string from the textbox
- * @param {string} smiles - The SMILES string to display in JSME
+ * Updates the ChemWriter editor with a SMILES string from the textbox
+ * @param {string} smiles - The SMILES string to display in ChemWriter
  */
-function updateJSMEFromTextbox(smiles) {
+function updateChemWriterFromTextbox(smiles) {
   try {
-    if (smiles?.trim() !== "") {
-      jsmeApplet?.readGenericMolecularInput(smiles.trim());
-    } else {
-      jsmeApplet?.reset();
-    }
-    lastTextboxValue = smiles;
+    smiles = smiles.trim();
+    editor?.setSMILES(smiles);
   } catch (error) {
-    console.error("Error updating JSME from textbox:", error);
+    console.error("Error updating ChemWriter from textbox:", error);
   }
 }
 
@@ -199,19 +97,19 @@ function updateJSMEFromTextbox(smiles) {
 // UI MONITORING
 // ============================================================================
 
-/**
- * Finds the textbox element and sets up event listeners
- */
-function setupTextboxEventListeners() {
+function setupSmilesTextboxEventListeners() {
   const textbox = document.querySelector(SMILES_INPUT_SELECTOR);
   if (!textbox) {
     return;
   }
-
   textbox.addEventListener("input", handleTextboxChange);
   textbox.addEventListener("change", handleTextboxChange);
   textbox.addEventListener("paste", handleTextboxPaste);
-  textbox.addEventListener("keyup", handleTextboxChange);
+}
+
+function setupChemWriterEventListeners() {
+  window.addEventListener("resize", () => editor.jd());
+  editor.addEventListener('document-edited', updateGradioTextbox);
 }
 
 /**
@@ -219,9 +117,7 @@ function setupTextboxEventListeners() {
  * @param {Event} event - The change event
  */
 function handleTextboxChange(event) {
-  if (event.target.value !== lastTextboxValue) {
-    updateJSMEFromTextbox(event.target.value);
-  }
+  updateChemWriterFromTextbox(event.target.value);
 }
 
 /**
@@ -230,20 +126,8 @@ function handleTextboxChange(event) {
  */
 function handleTextboxPaste(event) {
   setTimeout(() => {
-    updateJSMEFromTextbox(event.target.value);
+    updateChemWriterFromTextbox(event.target.value);
   }, PASTE_DELAY);
-}
-
-/**
- * Handles window resize events and updates JSME applet width
- */
-function handleResize() {
-  try {
-    jsmeApplet?.setMenuScale(getJsmeGuiScale());
-    jsmeApplet?.setWidth(getJsmeContainerWidthPx());
-  } catch (error) {
-    console.error("Error resizing JSME applet:", error);
-  }
 }
 
 // ============================================================================
@@ -251,26 +135,20 @@ function handleResize() {
 // ============================================================================
 
 /**
- * Sets a SMILES string in both JSME and Gradio textbox
+ * Sets ChemWriter SMILES string
  * @param {string} smiles - The SMILES string to set
- * @returns {string} The SMILES string that was set
  * @public
  */
-window.setJSMESmiles = function (smiles) {
-  updateJSMEFromTextbox(smiles);
-  updateGradioTextbox(smiles);
-  return smiles;
+window.setCWSmiles = function (smiles) {
+  updateChemWriterFromTextbox(smiles);
 };
 
 /**
- * Clears both JSME and Gradio textbox
- * @returns {Array} Array containing cleared state for Gradio components
+ * Clears both ChemWriter and Gradio textbox
  * @public
  */
-window.clearJSME = function () {
-  jsmeApplet?.reset();
-  updateGradioTextbox("");
-  return ["", "", [], [], "Cleared - Draw a new molecule or enter SMILES"];
+window.clearCW = function () {
+  editor.setMolfile('\nCWRITER06142521562D\nCreated with ChemWriter - https://chemwriter.com\n  0  0  0  0  0  0  0  0  0  0999 V2000\nM  END');
 };
 
 // ============================================================================
@@ -278,30 +156,22 @@ window.clearJSME = function () {
 // ============================================================================
 
 /**
- * Checks if JSME library is loaded and initializes JSME applet
- * Retries until the library becomes available
+ * Checks if ChemWriter library is loaded and initializes ChemWriter editor
  */
 function initializeWhenReady() {
-  if (typeof JSApplet !== "undefined" && JSApplet.JSME) {
-    console.log("JSME library loaded, initializing...");
-    initializeJSME();
+  chemwriter = window?.chemwriter;
+  // The ChemWriter library normally sets up a window load event listener: window.addEventListener("load", function(){Z.De()}, false)
+  // However, due to race conditions, the "load" event listener may not be added or triggered in time for proper initialization.
+  // So we call the initialization function directly here.
+  chemwriter?.System?.De();
+  editor = chemwriter?.components?.editor;
+  if (typeof chemwriter?.System?.De !== "undefined" && typeof editor !== "undefined") {
+    console.log("ChemWriter library loaded, initializing...");
+    chemwriter.System.ready(initializeChemWriter);
   } else {
-    console.log("JSME library not ready, retrying...");
+    console.log("ChemWriter library not ready, retrying...");
     setTimeout(initializeWhenReady, INIT_RETRY_DELAY);
   }
 }
 
-/**
- * Starts the initialization process based on document ready state
- */
-function startInitialization() {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(initializeWhenReady, INIT_RETRY_DELAY);
-    });
-  } else {
-    setTimeout(initializeWhenReady, INIT_RETRY_DELAY);
-  }
-}
-
-startInitialization();
+initializeWhenReady();
