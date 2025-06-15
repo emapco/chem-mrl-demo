@@ -1,4 +1,4 @@
-chem-mrl>=0.5.9
+chem-mrl>=0.6.3
 gradio[mcp]>=4.0.0
 transformers>=4.30.0
 torch>=2.0.0
