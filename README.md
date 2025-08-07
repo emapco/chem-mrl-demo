@@ -43,7 +43,7 @@ Navigate to [http://localhost:7860](http://localhost:7860)
 
 ## Architecture
 
-```
+```mermaid
 graph TD
     A[ChemWriter Editor<br/>Frontend] <--> B[Gradio API<br/>Backend]
     B <--> C[Chem-MRL<br/>HF Model]
