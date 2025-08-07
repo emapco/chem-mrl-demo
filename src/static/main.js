@@ -26,6 +26,9 @@ const SMILES_INPUT_SELECTOR = "#smiles_input textarea, #smiles_input input";
 /** @const {string} CSS selector for the Gradio Mol file input element */
 const MOL_INPUT_SELECTOR = "#mol_input textarea, #mol_input input";
 
+/** @const {string} CSS selector for the Gradio search button */
+const SEARCH_BUTTON_SELECTOR = "#search_btn";
+
 /** @const {number} Delay for paste event handling (ms) */
 const PASTE_DELAY = 50;
 
@@ -47,6 +50,8 @@ function initializeChemWriter() {
     setupSmilesTextboxEventListeners();
     setupChemWriterEventListeners();
     editor.setSMILES(DEFAULT_SMILES);
+    // search after the rest of the gradio components load
+    setTimeout(() => document.getElementById("search_btn")?.click(), 500);
     console.log("ChemWriter initialized successfully");
   } catch (error) {
     console.error("Error initializing ChemWriter:", error);

@@ -44,23 +44,25 @@ Navigate to [http://localhost:7860](http://localhost:7860)
 ## Architecture
 
 ```
-┌────────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  ChemWriter Editor │───▶  Gradio API      ───▶│  Chem-MRL       │
-│  (Frontend)        │    │  (Backend)      │    │  (HF Model)     │
-└────────────────────┘    └─────────────────┘    └─────────────────┘
-                                   │
-                                   ▼
-                          ┌─────────────────┐
-                          │  Redis + HNSW   │
-                          │  (Vector DB)    │
-                          └─────────────────┘
-                                   │
-                                   │
-                                   ▼
-                          ┌─────────────────┐
-                          │Similar Molecules│
-                          │   (Results)     │
-                          └─────────────────┘
+graph TD
+    A[ChemWriter Editor<br/>Frontend] <--> B[Gradio API<br/>Backend]
+    B <--> C[Chem-MRL<br/>HF Model]
+    B <--> D[Redis + HNSW<br/>Vector DB]
+    D --> E[Similar Molecules<br/>Results]
+    E --> B
+    
+    %% Styling
+    classDef frontend fill:#e1f5fe
+    classDef backend fill:#f3e5f5
+    classDef model fill:#e8f5e8
+    classDef database fill:#fff3e0
+    classDef results fill:#fce4ec
+    
+    class A frontend
+    class B backend
+    class C model
+    class D database
+    class E results
 ```
 
 ## Configuration
